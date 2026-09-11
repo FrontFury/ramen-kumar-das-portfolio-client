@@ -1,7 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 import Main from "../Layout/Main";
-
-// আপডেট করা ফোল্ডার স্ট্রাকচার অনুযায়ী Import
 import Home from "../pages/Home/Home/Home";
 import Experience from "../pages/Experience/Experience";
 import Tools from "../pages/Tools/Tools";
@@ -20,7 +18,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />,
+        element: <Home/>
       },
       {
         path: "/awards-experience",
@@ -28,11 +26,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/research-tools",
-        element: <Tools />,
+        element: <Tools/>
       },
       {
         path: "/research-interest",
-        element: <Research />,
+        element: <Research/>
       },
       {
         path: "/completed-courses",

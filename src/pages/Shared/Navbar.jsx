@@ -20,11 +20,10 @@ const Navbar = () => {
 
   return (
     <nav className="bg-[#163A2D] text-white sticky top-0 z-50 shadow-md font-['Playfair_Display',serif]">
-      {/* max-w-7xl সরিয়ে w-full lg:w-11/12 mx-auto যোগ করা হয়েছে */}
-      <div className="w-full  mx-auto px-4 sm:px-6 lg:px-20">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-20">
         <div className="flex items-center justify-between h-16 sm:h-20">
           
-          {/* ==================== LEFT SIDE: NAME ==================== */}
+          {/* ==================== LEFT SIDE: BRAND / NAME ==================== */}
           <div className="flex-shrink-0">
             <NavLink 
               to="/" 
@@ -60,7 +59,7 @@ const Navbar = () => {
             <button
               onClick={() => setIsOpen((prev) => !prev)}
               type="button"
-              className="p-2 rounded-md text-gray-200 hover:text-white hover:bg-[#123025] focus:outline-none"
+              className="p-2 rounded-md text-gray-200 hover:text-white hover:bg-[#123025] focus:outline-none cursor-pointer"
               aria-label="Toggle Menu"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
