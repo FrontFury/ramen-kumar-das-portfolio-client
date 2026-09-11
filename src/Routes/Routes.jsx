@@ -17,43 +17,43 @@ export const router = createBrowserRouter([
     element: <Main />,
     children: [
       {
-        path: "/",
-        element: <Home/>
+        index: true,
+        element: <Home />,
       },
       {
-        path: "/awards-experience",
+        path: "awards-experience",
         element: <Experience />,
       },
       {
-        path: "/research-tools",
-        element: <Tools/>
+        path: "research-tools",
+        element: <Tools />,
       },
       {
-        path: "/research-interest",
-        element: <Research/>
+        path: "research-interest",
+        element: <Research />,
       },
       {
-        path: "/completed-courses",
+        path: "completed-courses",
         element: <Courses />,
       },
       {
-        path: "/academic-degree",
+        path: "academic-degree",
         element: <Academics />,
       },
       {
-        path: "/workshops-seminars",
+        path: "workshops-seminars",
         element: <Workshops />,
       },
       {
-        path: "/gallery",
+        path: "gallery",
         element: <Gallery />,
       },
       {
-        path: "/contact",
+        path: "contact",
         element: <Contact />,
       },
       {
-        path: "/referees",
+        path: "referees",
         element: <Referees />,
       },
     ],
