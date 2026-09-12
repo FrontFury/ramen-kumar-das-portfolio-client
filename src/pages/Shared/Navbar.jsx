@@ -19,7 +19,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-[#163A2D] text-white sticky top-0 z-50 shadow-md font-['Playfair_Display',serif]">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#163A2D] text-white shadow-lg backdrop-blur-md font-['Playfair_Display',serif]">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-20">
         <div className="flex items-center justify-between h-16 sm:h-20">
           
