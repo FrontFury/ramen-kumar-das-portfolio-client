@@ -5,7 +5,10 @@ import {
   Sparkles, Calendar, MapPin, X, CheckCircle2, Award 
 } from "lucide-react";
 
-// Certificate Images (Your actual image paths)
+// Banner Background Image
+import bgBanner from "../../assets/HomeBG.png"; 
+
+// Certificate Images
 import cert1 from "../../assets/cert1.png"; 
 import cert2 from "../../assets/cert2.png"; 
 import cert3 from "../../assets/cert3.png"; 
@@ -15,7 +18,7 @@ import cert5 from "../../assets/cert5.png";
 const Research = () => {
   const [selectedCert, setSelectedCert] = useState(null);
 
-  // Research Data Extracted from Images
+  // Research Data
   const publishedPapers = [
     {
       id: 1,
@@ -97,20 +100,48 @@ const Research = () => {
   ];
 
   return (
-    <div className="w-full bg-[#F8FAFC] text-gray-800 font-['Playfair_Display',serif] py-12 px-4 sm:px-6 lg:px-12">
-      <div className="max-w-6xl mx-auto space-y-16">
+    <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-xl lg:rounded-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
+      
+      {/* 1. HERO BANNER (Matching Tools.jsx) */}
+      <section
+        className="relative min-h-[360px] md:min-h-[420px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-xl lg:rounded-3xl overflow-hidden shadow-md"
+        style={{
+          backgroundImage: `url(${bgBanner})`,
+        }}
+      >
+        {/* Soft Overlay for Light Theme Contrast */}
+        <div className="absolute inset-0 bg-[#0C2219]/75 backdrop-blur-[2px]" />
+
+        <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 border border-white/30 backdrop-blur-md text-xs sm:text-sm tracking-widest text-amber-300 uppercase mb-6 font-sans shadow-sm">
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            <span>Academic Contributions & Publications</span>
+          </div>
+
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-amber-300 tracking-tight leading-tight mb-4 drop-shadow-sm">
+            Research Paper & Experience
+          </h1>
+
+          <p className="text-sm sm:text-base text-gray-100 max-w-2xl font-sans font-light leading-relaxed">
+            A comprehensive compilation of published journal articles, ongoing research reviews, international conference presentations, and core scientific interests.
+          </p>
+        </div>
+      </section>
+
+      {/* 2. MAIN CONTENT AREA */}
+      <div className="py-12 sm:py-16 px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto space-y-16">
 
         {/* SECTION HEADER */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-emerald-900/10 pb-6">
           <div className="flex items-center gap-3">
             <span className="w-2.5 h-8 bg-[#163A2D] rounded-full inline-block" />
-            <h1 className="text-3xl sm:text-5xl font-bold text-[#163A2D]">
-              Research Publications & Experience
-            </h1>
+            <h2 className="text-2xl sm:text-4xl font-bold text-[#163A2D]">
+              Research Portfolio
+            </h2>
           </div>
           <span className="text-xs tracking-widest text-emerald-800 uppercase font-sans font-semibold mt-3 sm:mt-0 flex items-center gap-1.5">
             <Sparkles className="w-4 h-4 text-amber-500" />
-            Academic Contributions
+            Scholarly Works
           </span>
         </div>
 
@@ -118,9 +149,9 @@ const Research = () => {
         <div className="bg-white/80 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-emerald-100 shadow-sm font-sans">
           <div className="flex items-center gap-2 mb-4">
             <Brain className="w-5 h-5 text-emerald-700" />
-            <h2 className="text-lg font-bold text-[#163A2D] uppercase tracking-wider">
+            <h3 className="text-lg font-bold text-[#163A2D] uppercase tracking-wider">
               Research Interests
-            </h2>
+            </h3>
           </div>
           <div className="flex flex-wrap gap-2.5">
             {researchInterests.map((interest, idx) => (
@@ -135,13 +166,13 @@ const Research = () => {
           </div>
         </div>
 
-        {/* 1. PUBLISHED JOURNAL PAPER */}
+        {/* PUBLISHED JOURNAL PAPER */}
         <section className="space-y-6">
           <div className="flex items-center gap-2 border-l-4 border-emerald-700 pl-3">
             <BookOpen className="w-6 h-6 text-emerald-700" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#163A2D]">
+            <h3 className="text-2xl sm:text-3xl font-bold text-[#163A2D]">
               Published Journal Paper
-            </h2>
+            </h3>
           </div>
 
           <div className="space-y-4">
@@ -161,9 +192,9 @@ const Research = () => {
                   </span>
                 </div>
 
-                <h3 className="text-lg sm:text-xl font-bold text-[#163A2D] font-['Playfair_Display',serif] mb-2 leading-snug">
+                <h4 className="text-lg sm:text-xl font-bold text-[#163A2D] font-['Playfair_Display',serif] mb-2 leading-snug">
                   "{paper.title}"
-                </h3>
+                </h4>
 
                 <p className="text-xs sm:text-sm text-amber-700 font-semibold mb-2">
                   Authors: <span className="text-gray-700 font-normal">{paper.authors}</span>
@@ -188,13 +219,13 @@ const Research = () => {
           </div>
         </section>
 
-        {/* 2. PAPER UNDER REVIEW */}
+        {/* PAPER UNDER REVIEW */}
         <section className="space-y-6">
           <div className="flex items-center gap-2 border-l-4 border-amber-500 pl-3">
             <Clock className="w-6 h-6 text-amber-600" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#163A2D]">
+            <h3 className="text-2xl sm:text-3xl font-bold text-[#163A2D]">
               Papers Under Review
-            </h2>
+            </h3>
           </div>
 
           <div className="space-y-4">
@@ -207,9 +238,9 @@ const Research = () => {
                   • {paper.status}
                 </div>
 
-                <h3 className="text-lg sm:text-xl font-bold text-[#163A2D] font-['Playfair_Display',serif] mb-2 leading-snug">
+                <h4 className="text-lg sm:text-xl font-bold text-[#163A2D] font-['Playfair_Display',serif] mb-2 leading-snug">
                   "{paper.title}"
-                </h3>
+                </h4>
 
                 <p className="text-xs sm:text-sm text-amber-700 font-semibold mb-2">
                   Authors: <span className="text-gray-700 font-normal">{paper.authors}</span>
@@ -223,13 +254,13 @@ const Research = () => {
           </div>
         </section>
 
-        {/* 3. CONFERENCE PRESENTATIONS / ABSTRACTS */}
+        {/* CONFERENCE PRESENTATIONS / ABSTRACTS */}
         <section className="space-y-6">
           <div className="flex items-center gap-2 border-l-4 border-emerald-700 pl-3">
             <Presentation className="w-6 h-6 text-emerald-700" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#163A2D]">
+            <h3 className="text-2xl sm:text-3xl font-bold text-[#163A2D]">
               Conference Presentations / Abstracts
-            </h2>
+            </h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
@@ -262,9 +293,9 @@ const Research = () => {
                     </span>
                   )}
 
-                  <h3 className="text-base font-bold text-[#163A2D] font-['Playfair_Display',serif] mb-2 leading-snug">
+                  <h4 className="text-base font-bold text-[#163A2D] font-['Playfair_Display',serif] mb-2 leading-snug">
                     "{item.title}"
-                  </h3>
+                  </h4>
 
                   <p className="text-xs text-amber-700 font-semibold mb-2">
                     Authors: <span className="text-gray-600 font-normal">{item.authors}</span>
