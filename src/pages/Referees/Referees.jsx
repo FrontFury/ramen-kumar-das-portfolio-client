@@ -1,56 +1,71 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
 import { 
   UserCheck, Mail, Phone, Building2, 
-  GraduationCap, Copy, Check, Sparkles, ExternalLink 
+  GraduationCap, Copy, Check, Sparkles, ExternalLink,
+  Loader2, AlertCircle
 } from "lucide-react";
 
 // Banner Background Image
 import bgBanner from "../../assets/HomeBG.png"; 
 
 const Referees = () => {
+  const [refereesData, setRefereesData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [copiedText, setCopiedText] = useState("");
 
-  // Extracted Data from Image
-  const refereesData = [
-    {
-      id: 1,
-      name: "Dr. Md. Rubaiyat Hossain Mondal",
-      designation: "Professor",
-      department: "Institute of Information & Communication Technology",
-      institution: "Bangladesh University of Engineering & Technology (BUET)",
-      phone: "+8801711014224",
-      emails: ["rubaiyat97@iict.buet.ac.bd"],
-      tag: "BUET Reference",
-    },
-    {
-      id: 2,
-      name: "Dr. Kamruzzaman Khan",
-      designation: "Professor",
-      department: "Department of Mathematics",
-      institution: "Pabna University of Science & Technology",
-      phone: "+8801717254474",
-      emails: ["k.khanru@gmail.com", "k.khanru@pust.ac.bd"],
-      tag: "PUST Reference",
-    },
-    {
-      id: 3,
-      name: "Dr. Md. Sarwar Hosain",
-      designation: "Professor",
-      department: "Department of Information & Communication Engineering",
-      institution: "Pabna University of Science & Technology",
-      phone: "+8801722047833",
-      emails: ["sarwar.ice@pust.ac.bd"],
-      tag: "PUST Reference",
-    },
-  ];
+  // Fetch API Data from Backend
+  useEffect(() => {
+    const fetchReferees = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/referees");
+        const data = Array.isArray(response.data)
+          ? response.data
+          : response.data.data || [];
+        setRefereesData(data);
+      } catch (err) {
+        console.error("Error fetching referees data:", err);
+        setError("Failed to load referee details. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReferees();
+  }, []);
 
   // Helper function to handle Copying to Clipboard
   const handleCopy = (text, key) => {
+    if (!text) return;
     navigator.clipboard.writeText(text);
     setCopiedText(key);
     setTimeout(() => setCopiedText(""), 2000);
   };
+
+  if (loading) {
+    return (
+      <div className="w-full py-20 bg-[#F8FAFC] flex flex-col items-center justify-center gap-3 font-sans">
+        <Loader2 className="w-10 h-10 animate-spin text-[#163A2D]" />
+        <p className="text-sm font-semibold text-[#163A2D] animate-pulse">
+          Loading Academic Referees...
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full bg-[#F8FAFC] flex items-center justify-center p-8 font-sans">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-red-100 max-w-md text-center space-y-3">
+          <AlertCircle className="w-12 h-12 text-rose-500 mx-auto opacity-80" />
+          <h3 className="text-lg font-bold text-gray-800">Connection Error</h3>
+          <p className="text-xs text-gray-500">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-xl lg:rounded-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
@@ -98,111 +113,167 @@ const Referees = () => {
           </span>
         </div>
 
+        {/* Empty State */}
+        {refereesData.length === 0 && (
+          <div className="text-center py-16 bg-white/80 rounded-3xl border border-dashed border-emerald-200 space-y-3 font-sans">
+            <GraduationCap className="w-12 h-12 text-emerald-600 mx-auto opacity-40" />
+            <h3 className="text-base font-bold text-gray-700">No Referee Details Found</h3>
+            <p className="text-xs text-gray-500">Contact information will be updated soon.</p>
+          </div>
+        )}
+
         {/* REFEREES GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 font-sans">
-          {refereesData.map((ref) => (
-            <motion.div
-              key={ref.id}
-              whileHover={{ y: -5 }}
-              className="bg-white rounded-2xl border border-emerald-100 p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-6"
-            >
-              <div className="space-y-4">
-                {/* Header Tag */}
-                <div className="flex justify-between items-center">
-                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-bold border border-emerald-100">
-                    {ref.tag}
-                  </span>
-                  <GraduationCap className="w-5 h-5 text-amber-600" />
-                </div>
-
-                {/* Name & Title */}
-                <div>
-                  <h3 className="text-xl font-bold text-[#163A2D] font-['Playfair_Display',serif] leading-tight mb-1">
-                    {ref.name}
-                  </h3>
-                  <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
-                    {ref.designation}
-                  </p>
-                </div>
-
-                {/* Academic Department & Institution */}
-                <div className="space-y-2 pt-2 border-t border-gray-100 text-xs text-gray-600">
-                  <p className="font-medium text-gray-700 leading-relaxed">
-                    {ref.department}
-                  </p>
-                  <p className="flex items-start gap-1.5 text-emerald-900 font-semibold leading-relaxed">
-                    <Building2 className="w-3.5 h-3.5 text-emerald-700 shrink-0 mt-0.5" />
-                    <span>{ref.institution}</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* Contact Information */}
-              <div className="space-y-3 pt-4 border-t border-gray-100 text-xs">
+        {refereesData.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 font-sans">
+            <AnimatePresence>
+              {refereesData.map((ref, idx) => {
+                const itemKey = ref._id || ref.id || idx;
                 
-                {/* Phone */}
-                <div className="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 border border-gray-100">
-                  <div className="flex items-center gap-2 text-gray-700 truncate">
-                    <Phone className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <a href={`tel:${ref.phone}`} className="hover:text-emerald-700 font-medium">
-                      {ref.phone}
-                    </a>
-                  </div>
-                  <button
-                    onClick={() => handleCopy(ref.phone, `phone-${ref.id}`)}
-                    className="p-1.5 text-gray-400 hover:text-emerald-700 transition-colors"
-                    title="Copy Phone"
+                return (
+                  <motion.div
+                    key={itemKey}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: idx * 0.1 }}
+                    whileHover={{ y: -6 }}
+                    className="group relative bg-white rounded-2xl border border-emerald-100/80 p-6 sm:p-7 shadow-sm hover:shadow-xl hover:border-emerald-200 transition-all duration-300 flex flex-col justify-between space-y-6 overflow-hidden"
                   >
-                    {copiedText === `phone-${ref.id}` ? (
-                      <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    ) : (
-                      <Copy className="w-3.5 h-3.5" />
-                    )}
-                  </button>
-                </div>
+                    {/* Top Accent Line */}
+                    <div className="absolute top-0 left-6 right-6 h-[2.5px] bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                {/* Emails */}
-                {ref.emails.map((email, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 border border-gray-100"
-                  >
-                    <div className="flex items-center gap-2 text-gray-700 truncate">
-                      <Mail className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <a
-                        href={`mailto:${email}`}
-                        className="hover:text-emerald-700 font-medium truncate"
-                      >
-                        {email}
-                      </a>
+                    <div className="space-y-4">
+                      {/* Header Tag */}
+                      <div className="flex justify-between items-center">
+                        <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-bold border border-emerald-100/80 shadow-2xs">
+                          {ref.tag || "Academic Reference"}
+                        </span>
+                        <div className="p-2 rounded-full bg-amber-50 text-amber-600 group-hover:bg-amber-100 transition-colors">
+                          <GraduationCap className="w-4 h-4" />
+                        </div>
+                      </div>
+
+                      {/* Name & Title */}
+                      <div>
+                        <h3 className="text-xl font-bold text-[#163A2D] font-['Playfair_Display',serif] leading-tight mb-1 group-hover:text-emerald-900 transition-colors">
+                          {ref.name}
+                        </h3>
+                        <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
+                          {ref.designation}
+                        </p>
+                      </div>
+
+                      {/* Academic Department & Institution */}
+                      <div className="space-y-2 pt-3 border-t border-gray-100 text-xs text-gray-600">
+                        {ref.department && (
+                          <p className="font-medium text-gray-700 leading-relaxed">
+                            {ref.department}
+                          </p>
+                        )}
+                        {ref.institution && (
+                          <p className="flex items-start gap-1.5 text-emerald-900 font-semibold leading-relaxed">
+                            <Building2 className="w-3.5 h-3.5 text-emerald-700 shrink-0 mt-0.5" />
+                            <span>{ref.institution}</span>
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <button
-                      onClick={() => handleCopy(email, `email-${ref.id}-${idx}`)}
-                      className="p-1.5 text-gray-400 hover:text-emerald-700 transition-colors"
-                      title="Copy Email"
-                    >
-                      {copiedText === `email-${ref.id}-${idx}` ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5" />
+
+                    {/* Contact Information */}
+                    <div className="space-y-2.5 pt-4 border-t border-gray-100 text-xs">
+                      
+                      {/* Phone */}
+                      {ref.phone && (
+                        <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-gray-100 group-hover:bg-emerald-50/40 transition-colors">
+                          <div className="flex items-center gap-2 text-gray-700 truncate">
+                            <Phone className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <a href={`tel:${ref.phone}`} className="hover:text-emerald-700 font-medium">
+                              {ref.phone}
+                            </a>
+                          </div>
+                          <button
+                            onClick={() => handleCopy(ref.phone, `phone-${itemKey}`)}
+                            className="p-1.5 text-gray-400 hover:text-emerald-700 transition-colors"
+                            title="Copy Phone"
+                          >
+                            {copiedText === `phone-${itemKey}` ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-600" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        </div>
                       )}
-                    </button>
-                  </div>
-                ))}
 
-                {/* Email Action Button */}
-                <a
-                  href={`mailto:${ref.emails[0]}`}
-                  className="w-full mt-2 py-2.5 px-4 rounded-xl bg-[#163A2D] text-amber-300 text-xs font-bold hover:bg-[#0C2219] transition-colors flex items-center justify-center gap-2"
-                >
-                  <span>Send Direct Email</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+                      {/* Primary Email */}
+                      {ref.email && (
+                        <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-gray-100 group-hover:bg-emerald-50/40 transition-colors">
+                          <div className="flex items-center gap-2 text-gray-700 truncate">
+                            <Mail className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <a
+                              href={`mailto:${ref.email}`}
+                              className="hover:text-emerald-700 font-medium truncate"
+                            >
+                              {ref.email}
+                            </a>
+                          </div>
+                          <button
+                            onClick={() => handleCopy(ref.email, `email-${itemKey}`)}
+                            className="p-1.5 text-gray-400 hover:text-emerald-700 transition-colors"
+                            title="Copy Email"
+                          >
+                            {copiedText === `email-${itemKey}` ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-600" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        </div>
+                      )}
 
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                      {/* Secondary Email (If Available) */}
+                      {ref.secondaryEmail && (
+                        <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-gray-100 group-hover:bg-emerald-50/40 transition-colors">
+                          <div className="flex items-center gap-2 text-gray-700 truncate">
+                            <Mail className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                            <a
+                              href={`mailto:${ref.secondaryEmail}`}
+                              className="hover:text-emerald-700 font-medium truncate text-gray-600"
+                            >
+                              {ref.secondaryEmail}
+                            </a>
+                          </div>
+                          <button
+                            onClick={() => handleCopy(ref.secondaryEmail, `sec-email-${itemKey}`)}
+                            className="p-1.5 text-gray-400 hover:text-emerald-700 transition-colors"
+                            title="Copy Secondary Email"
+                          >
+                            {copiedText === `sec-email-${itemKey}` ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-600" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Send Direct Email Button */}
+                      {ref.email && (
+                        <a
+                          href={`mailto:${ref.email}`}
+                          className="w-full mt-3 py-2.5 px-4 rounded-xl bg-[#163A2D] text-amber-300 text-xs font-bold hover:bg-[#0C2219] shadow-2xs hover:shadow-md transition-all flex items-center justify-center gap-2"
+                        >
+                          <span>Send Direct Email</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+        )}
 
       </div>
 
