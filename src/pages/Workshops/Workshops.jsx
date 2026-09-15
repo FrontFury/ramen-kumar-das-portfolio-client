@@ -1,199 +1,186 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
 import { 
-  Presentation, Calendar, Award, ExternalLink, 
-  Sparkles, Building2, X, Trophy, Users 
+  Presentation, 
+  Calendar, 
+  Award, 
+  ExternalLink, 
+  Sparkles, 
+  Building2, 
+  X, 
+  Trophy, 
+  Loader2, 
+  AlertCircle,
+  Tag
 } from "lucide-react";
 
-// Banner Background Image
-import bgBanner from "../../assets/HomeBG.png"; 
-
-// Workshop & Seminar Certificate/Award Images
-import wsCert1 from "../../assets/wsCert1.png"; // Workshop on 3D Printing Technology
-import wsCert2 from "../../assets/wsCert2.png"; // Training on Reservation and Ticketing on SABRE
-import wsCert3 from "../../assets/wsCert3.png"; // Workshop on Automation
-import wsCert4 from "../../assets/wsCert4.png"; // Workshop on Be Communicative
-import wsCert5 from "../../assets/wsCert5.png"; // Seminar on Transition from University to Corporate Life
-import wsCert6 from "../../assets/wsCert6.png"; // Carrom Runner Up Prize @ DIIT
-
 const Workshops = () => {
+  const [workshops, setWorkshops] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedCert, setSelectedCert] = useState(null);
 
-  // Extracted Data from Images
-  const workshopsData = [
-    {
-      id: 1,
-      title: "Workshop on 3D Printing Technology",
-      organizer: "Department of Information & Communication Engineering, University of Rajshahi",
-      date: "October 5, 2017",
-      type: "Workshop",
-      certificate: wsCert1,
-      recipient: "Ramen Kumar Das",
-    },
-    {
-      id: 2,
-      title: "Training on Reservation and Ticketing on SABRE",
-      organizer: "Sabre Travel Network (Bangladesh) Limited",
-      date: "April 12, 2025",
-      type: "Professional Training",
-      certificate: wsCert2,
-      recipient: "Ramen Kumar Das",
-    },
-    {
-      id: 3,
-      title: "Workshop on Automation",
-      organizer: "IEEE PUST Student Branch & Dept. of EEE, Pabna University of Science & Technology",
-      date: "September 21-22, 2017",
-      type: "Technical Workshop",
-      certificate: wsCert3,
-      recipient: "Ramen Kumar Das",
-    },
-    {
-      id: 4,
-      title: "Workshop on Be Communicative",
-      organizer: "BDYOUNGSTARZ at Pabna University of Science and Technology",
-      date: "January 14, 2017",
-      type: "Soft Skills Workshop",
-      certificate: wsCert4,
-      recipient: "Ramen Kumar Das",
-    },
-    {
-      id: 5,
-      title: "Seminar on Transition from University to Corporate Life",
-      organizer: "IEEE PUST Student Branch & Dept. of EEE, Pabna University of Science & Technology",
-      date: "March 1, 2018",
-      type: "Career Seminar",
-      certificate: wsCert5,
-      recipient: "Ramen Kumar Das",
-    },
-    {
-      id: 6,
-      title: "Carrom Runner Up Prize @ Daffodil Institute of IT",
-      organizer: "Annual Wonder Last Indoor Championship-2021, DIIT",
-      date: "2021",
-      type: "Extracurricular Award",
-      certificate: wsCert6,
-      recipient: "Ramen Kumar Das",
-      isAward: true,
-    },
-  ];
+  // Fetch API Data
+  useEffect(() => {
+    const fetchWorkshops = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/workshops");
+        const data = Array.isArray(response.data)
+          ? response.data
+          : response.data.data || [];
+        setWorkshops(data);
+      } catch (err) {
+        console.error("Error fetching workshops data:", err);
+        setError("Failed to load workshops and seminars. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWorkshops();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="w-full py-12 bg-[#F4F9F5]/60 flex flex-col items-center justify-center gap-3 font-sans">
+        <Loader2 className="w-10 h-10 animate-spin text-[#163A2D]" />
+        <p className="text-sm font-semibold text-[#163A2D] animate-pulse">
+          Loading Workshops & Seminars...
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full bg-[#F4F9F5]/60 flex items-center justify-center p-4 font-sans">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-red-100 max-w-md text-center space-y-3">
+          <AlertCircle className="w-12 h-12 text-rose-500 mx-auto opacity-80" />
+          <h3 className="text-lg font-bold text-gray-800">Connection Error</h3>
+          <p className="text-xs text-gray-500">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-xl lg:rounded-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
-      
-      {/* 1. HERO BANNER */}
-      <section
-        className="relative min-h-[360px] md:min-h-[420px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-xl lg:rounded-3xl overflow-hidden shadow-md"
-        style={{
-          backgroundImage: `url(${bgBanner})`,
-        }}
-      >
-        {/* Dark Overlay for Contrast */}
-        <div className="absolute inset-0 bg-[#0C2219]/75 backdrop-blur-[2px]" />
-
-        <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 border border-white/30 backdrop-blur-md text-xs sm:text-sm tracking-widest text-amber-300 uppercase mb-6 font-sans shadow-sm">
-            <Sparkles className="w-4 h-4 text-amber-300" />
-            <span>Professional & Extracurricular Engagements</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-amber-300 tracking-tight leading-tight mb-4 drop-shadow-sm">
-            Workshops & Seminars
-          </h1>
-
-          <p className="text-sm sm:text-base text-gray-100 max-w-2xl font-sans font-light leading-relaxed">
-            A highlight of active participation in hands-on technical workshops, corporate skill seminars, and competitive achievements.
-          </p>
-        </div>
-      </section>
-
-      {/* 2. MAIN CONTENT AREA */}
-      <div className="py-12 sm:py-16 px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto space-y-12">
-
+    <section className="w-full bg-[#F4F9F5]/60 pt-6 pb-12 px-4 sm:px-6 lg:px-8 font-sans text-gray-800">
+      <div className="max-w-6xl mx-auto space-y-8">
+        
         {/* SECTION HEADER */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-emerald-900/10 pb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-emerald-900/10 pb-4 gap-2">
           <div className="flex items-center gap-3">
-            <span className="w-2.5 h-8 bg-[#163A2D] rounded-full inline-block" />
-            <h2 className="text-2xl sm:text-4xl font-bold text-[#163A2D]">
-              Certificates & Participation
-            </h2>
+            <span className="w-2.5 h-7 bg-[#163A2D] rounded-full inline-block" />
+            <h1 className="text-3xl sm:text-4xl font-bold font-['Playfair_Display',serif] text-[#163A2D]">
+              Workshops & Seminars
+            </h1>
           </div>
-          <span className="text-xs tracking-widest text-emerald-800 uppercase font-sans font-semibold mt-3 sm:mt-0 flex items-center gap-1.5">
-            <Presentation className="w-4 h-4 text-amber-500" />
-            Training & Activities
+          <span className="text-xs tracking-widest text-emerald-800 uppercase font-semibold flex items-center gap-1.5 bg-emerald-100/60 px-3 py-1 rounded-full">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            Training & Extracurricular Activities
           </span>
         </div>
 
-        {/* WORKSHOPS & SEMINARS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 font-sans">
-          {workshopsData.map((item) => (
-            <motion.div
-              key={item.id}
-              whileHover={{ y: -4 }}
-              className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                {/* Certificate Preview Thumbnail */}
+        {/* Empty State */}
+        {workshops.length === 0 && (
+          <div className="text-center py-16 bg-white/80 rounded-3xl border border-dashed border-emerald-200 space-y-3">
+            <Presentation className="w-12 h-12 text-emerald-600 mx-auto opacity-40" />
+            <h3 className="text-base font-bold text-gray-700">No Records Found</h3>
+            <p className="text-xs text-gray-500">Check back later for updated workshops and achievements.</p>
+          </div>
+        )}
+
+        {/* WORKSHOPS GRID */}
+        {workshops.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {workshops.map((item, idx) => {
+              const isCompetition = item.type?.toLowerCase().includes("sports") || 
+                                    item.type?.toLowerCase().includes("competition") ||
+                                    item.type?.toLowerCase().includes("award");
+
+              return (
                 <div
-                  onClick={() => setSelectedCert(item.certificate)}
-                  className="relative group mb-5 rounded-xl overflow-hidden border border-gray-200 cursor-pointer bg-gray-50 aspect-[4/3] flex items-center justify-center"
+                  key={item._id || idx}
+                  className="group relative bg-white/80 backdrop-blur-md rounded-2xl border border-emerald-100/80 shadow-2xs hover:shadow-md hover:border-emerald-200 transition-all duration-300 p-5 flex flex-col justify-between overflow-hidden"
                 >
-                  <img
-                    src={item.certificate}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-[#163A2D]/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-2">
-                    {item.isAward ? (
-                      <Trophy className="w-4 h-4 text-amber-400" />
-                    ) : (
-                      <Award className="w-4 h-4 text-amber-400" />
+                  {/* Top Glow Accent */}
+                  <div className={`absolute top-0 left-6 right-6 h-[2px] bg-gradient-to-r from-transparent ${isCompetition ? 'via-amber-400' : 'via-emerald-400'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+
+                  <div className="space-y-4">
+                    {/* Certificate Thumbnail Preview */}
+                    {item.certificateUrl && (
+                      <div
+                        onClick={() => setSelectedCert(item.certificateUrl)}
+                        className="relative group/img aspect-[16/10] w-full rounded-xl overflow-hidden border border-emerald-100/80 cursor-pointer bg-slate-50 flex items-center justify-center"
+                      >
+                        <img
+                          src={item.certificateUrl}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-[#163A2D]/75 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white text-xs font-bold gap-2 backdrop-blur-[1px]">
+                          {isCompetition ? (
+                            <Trophy className="w-4 h-4 text-amber-300" />
+                          ) : (
+                            <Award className="w-4 h-4 text-amber-300" />
+                          )}
+                          <span>View Full Document</span>
+                        </div>
+                      </div>
                     )}
-                    View Full Image
+
+                    {/* Type Badge & Date */}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 ${
+                        isCompetition 
+                          ? "bg-amber-100/80 text-amber-900" 
+                          : "bg-emerald-100/80 text-emerald-900"
+                      }`}>
+                        <Tag className="w-3 h-3" />
+                        {item.type || "Event"}
+                      </span>
+
+                      {item.date && (
+                        <span className="text-[11px] text-emerald-900 font-mono font-medium flex items-center gap-1">
+                          <Calendar className="w-3 h-3 text-emerald-700" />
+                          {item.date}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Title */}
+                    <h2 className="text-base sm:text-lg font-bold font-['Playfair_Display',serif] text-[#163A2D] leading-snug group-hover:text-emerald-800 transition-colors">
+                      {item.title}
+                    </h2>
+
+                    {/* Organizer Info */}
+                    {item.organizer && (
+                      <p className="text-xs font-medium text-gray-600 flex items-start gap-1.5 leading-relaxed pt-1 border-t border-emerald-50">
+                        <Building2 className="w-3.5 h-3.5 text-emerald-700 shrink-0 mt-0.5" />
+                        <span>{item.organizer}</span>
+                      </p>
+                    )}
                   </div>
+
+                  {/* Footer Action */}
+                  {item.certificateUrl && (
+                    <div className="pt-4 mt-3 border-t border-emerald-100/60 flex items-center justify-end">
+                      <button
+                        onClick={() => setSelectedCert(item.certificateUrl)}
+                        className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 hover:text-emerald-600 transition-colors"
+                      >
+                        <span>Preview Certificate</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+
                 </div>
-
-                {/* Badges */}
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className={`px-2.5 py-0.5 rounded text-[11px] font-bold ${
-                    item.isAward 
-                      ? "bg-amber-100 text-amber-800" 
-                      : "bg-emerald-100 text-emerald-800"
-                  }`}>
-                    {item.type}
-                  </span>
-                </div>
-
-                {/* Title */}
-                <h3 className="text-base font-bold text-[#163A2D] font-['Playfair_Display',serif] mb-3 leading-snug">
-                  {item.title}
-                </h3>
-
-                {/* Organizer Info */}
-                <p className="flex items-start gap-1.5 text-xs text-gray-600 mb-4 leading-relaxed">
-                  <Building2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>{item.organizer}</span>
-                </p>
-              </div>
-
-              {/* Card Footer */}
-              <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-                  {item.date}
-                </span>
-
-                <button
-                  onClick={() => setSelectedCert(item.certificate)}
-                  className="inline-flex items-center gap-1 text-emerald-800 font-semibold hover:text-emerald-600 transition-colors"
-                >
-                  <span>Preview</span>
-                  <ExternalLink className="w-3 h-3" />
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
       </div>
 
@@ -222,7 +209,7 @@ const Workshops = () => {
               </button>
               <img
                 src={selectedCert}
-                alt="Full View"
+                alt="Document View"
                 className="w-full h-auto max-h-[85vh] object-contain rounded-xl"
               />
             </motion.div>
@@ -230,7 +217,7 @@ const Workshops = () => {
         )}
       </AnimatePresence>
 
-    </div>
+    </section>
   );
 };
 
