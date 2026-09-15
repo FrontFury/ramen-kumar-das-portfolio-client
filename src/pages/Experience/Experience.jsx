@@ -2,6 +2,7 @@ import React from "react";
 import AwardBanner from "./AwardBanner/AwardBanner";
 import Award from "./Award/Award";
 import ProfessionalExperience from "./ProfessionalExperience/ProfessionalExperience";
+import ProjectSupervision from "./ProjectSupervision/ProjectSupervision";
 
 const Experience = () => {
   return (
@@ -9,6 +10,7 @@ const Experience = () => {
       <AwardBanner></AwardBanner>
       <Award></Award>
       <ProfessionalExperience></ProfessionalExperience>
+      <ProjectSupervision></ProjectSupervision>
     </div>
   );
 };
