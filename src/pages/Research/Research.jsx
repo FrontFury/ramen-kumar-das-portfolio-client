@@ -1,24 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
 import { 
   BookOpen, Clock, Presentation, Brain, ExternalLink, 
-  Sparkles, Calendar, MapPin, X, CheckCircle2, Award 
+  Sparkles, Calendar, MapPin, X, CheckCircle2, Award, Loader2, AlertCircle 
 } from "lucide-react";
 
 // Banner Background Image
 import bgBanner from "../../assets/HomeBG.png"; 
 
-// Certificate Images
-import cert1 from "../../assets/cert1.png"; 
-import cert2 from "../../assets/cert2.png"; 
-import cert3 from "../../assets/cert3.png"; 
-import cert4 from "../../assets/cert4.png"; 
-import cert5 from "../../assets/cert5.png"; 
-
 const Research = () => {
   const [selectedCert, setSelectedCert] = useState(null);
+  const [conferencePresentations, setConferencePresentations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Research Data
+  // Fetch API Data for Conference Presentations
+  useEffect(() => {
+    const fetchResearches = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/researches");
+        const data = Array.isArray(response.data)
+          ? response.data
+          : response.data.data || [];
+        setConferencePresentations(data);
+      } catch (err) {
+        console.error("Failed to fetch research data:", err);
+        setError("Failed to load conference presentations.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResearches();
+  }, []);
+
+  // Published Journal Papers Data
   const publishedPapers = [
     {
       id: 1,
@@ -31,6 +48,7 @@ const Research = () => {
     },
   ];
 
+  // Papers Under Review Data
   const papersUnderReview = [
     {
       id: 1,
@@ -38,55 +56,6 @@ const Research = () => {
       authors: "Ramen Kumar Das, Shahriar Jahan Rafi",
       journal: "Daffodil International University Journal of Science and Technology",
       status: "Under Review",
-    },
-  ];
-
-  const conferencePresentations = [
-    {
-      id: 1,
-      authors: "Ramen Kumar Das, Sharier Jahan Rafi",
-      title: "Data Analysis and Death Rate Prediction During Covid-19 in Bangladesh using ML",
-      event: "INTERNATIONAL ANTALYA SCIENTIFIC RESEARCH AND INNOVATIVE STUDIES CONGRESS - X",
-      date: "May 24-25, 2026",
-      location: "Antalya, Türkiye",
-      certificate: cert1,
-    },
-    {
-      id: 2,
-      authors: "Ramen Kumar Das, Nesheta Halder",
-      title: "Integrating Hybrid Deep Learning for Real-Time Monitoring of Prohibited Fishing Gear and Juvenile (Jatka) Hilsa Protection",
-      event: "6th Young Scientist Congress, Bangladesh Academy of Sciences",
-      date: "April 4-5, 2026",
-      location: "Dhaka, Bangladesh",
-      type: "Oral Presentation",
-      certificate: cert2,
-    },
-    {
-      id: 3,
-      authors: "Ramen Kumar Das",
-      title: "A Defense-Oriented Robust LSTM Framework for Time Series Data Against Poisoning and Backdoor Threats",
-      event: "3rd INTERNATIONAL CONGRESS ON ADVANCED RESEARCH AND APPLICATIONS",
-      date: "November 27-29, 2025",
-      location: "Sivas Cumhuriyet University, Sivas, Türkiye",
-      certificate: cert3,
-    },
-    {
-      id: 4,
-      authors: "Ramen Kumar Das & Mizanur Rahman",
-      title: "Comparative Study of Different Hashing Algorithms and Hashing Avalanche Effects on Image",
-      event: "7th International Conference on Integrated Sciences",
-      date: "October 25-26, 2025",
-      location: "Eastern University, Dhaka, Bangladesh",
-      certificate: cert4,
-    },
-    {
-      id: 5,
-      authors: "Ramen Kumar Das, Tanjila Chowdhury Orpe, & Shatabdi Chatterjee",
-      title: "Adversarial Resilient LSTM Model for Secure Time-Series Forecasting and Classification",
-      event: "International Conference on Applied Statistics and Data Science 2025 (ICASDS)",
-      date: "December 28-29, 2025",
-      location: "University of Dhaka, Dhaka, Bangladesh",
-      certificate: cert5,
     },
   ];
 
@@ -102,14 +71,13 @@ const Research = () => {
   return (
     <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-xl lg:rounded-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
       
-      {/* 1. HERO BANNER (Matching Tools.jsx) */}
+      {/* 1. HERO BANNER */}
       <section
         className="relative min-h-[360px] md:min-h-[420px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-xl lg:rounded-3xl overflow-hidden shadow-md"
         style={{
           backgroundImage: `url(${bgBanner})`,
         }}
       >
-        {/* Soft Overlay for Light Theme Contrast */}
         <div className="absolute inset-0 bg-[#0C2219]/75 backdrop-blur-[2px]" />
 
         <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
@@ -254,7 +222,7 @@ const Research = () => {
           </div>
         </section>
 
-        {/* CONFERENCE PRESENTATIONS / ABSTRACTS */}
+        {/* Dynamic CONFERENCE PRESENTATIONS / ABSTRACTS */}
         <section className="space-y-6">
           <div className="flex items-center gap-2 border-l-4 border-emerald-700 pl-3">
             <Presentation className="w-6 h-6 text-emerald-700" />
@@ -263,62 +231,95 @@ const Research = () => {
             </h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
-            {conferencePresentations.map((item) => (
-              <motion.div
-                key={item.id}
-                whileHover={{ y: -4 }}
-                className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-              >
-                <div>
-                  {/* Certificate Preview Thumbnail */}
-                  <div
-                    onClick={() => setSelectedCert(item.certificate)}
-                    className="relative group mb-4 rounded-xl overflow-hidden border border-gray-200 cursor-pointer bg-gray-50 aspect-video flex items-center justify-center"
-                  >
-                    <img
-                      src={item.certificate}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-[#163A2D]/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-2">
-                      <Award className="w-4 h-4 text-amber-400" />
-                      Click to View Certificate
-                    </div>
+          {/* Loading State */}
+          {loading && (
+            <div className="flex flex-col items-center justify-center gap-3 py-12 font-sans">
+              <Loader2 className="w-9 h-9 animate-spin text-emerald-700" />
+              <p className="text-sm text-gray-600 font-medium animate-pulse">
+                Fetching Conference Presentations...
+              </p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && !loading && (
+            <div className="bg-rose-50 p-6 rounded-2xl border border-rose-200 text-center space-y-2 font-sans">
+              <AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
+              <p className="text-xs sm:text-sm text-rose-700 font-medium">{error}</p>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && !error && conferencePresentations.length === 0 && (
+            <div className="bg-white/80 rounded-2xl p-8 text-center border border-dashed border-gray-300 font-sans">
+              <Presentation className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-500">No conference presentations available.</p>
+            </div>
+          )}
+
+          {/* Eye-Catching Glassmorphic Grid */}
+          {!loading && !error && conferencePresentations.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
+              {conferencePresentations.map((item) => (
+                <motion.div
+                  key={item._id || item.title}
+                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.3 }}
+                  className="group bg-white/90 backdrop-blur-md rounded-2xl border border-emerald-100/80 p-6 shadow-sm hover:shadow-xl hover:border-emerald-300/80 transition-all flex flex-col justify-between relative overflow-hidden"
+                >
+                  {/* Glowing subtle hover accent */}
+                  <div className="absolute -right-12 -top-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-amber-500/15 transition-all duration-500 pointer-events-none" />
+
+                  <div>
+                    {/* Certificate Preview Thumbnail */}
+                    {item.certificateUrl && (
+                      <div
+                        onClick={() => setSelectedCert(item.certificateUrl)}
+                        className="relative group/img mb-4 rounded-xl overflow-hidden border border-emerald-100/80 cursor-pointer bg-slate-900 aspect-video flex items-center justify-center shadow-inner"
+                      >
+                        <img
+                          src={item.certificateUrl}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover/img:scale-105 group-hover/img:opacity-80 transition-all duration-500"
+                        />
+                        <div className="absolute inset-0 bg-[#0C2219]/70 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white text-xs font-bold gap-2 backdrop-blur-[1px]">
+                          <Award className="w-4 h-4 text-amber-400" />
+                          <span>Click to View Certificate</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Paper Title */}
+                    <h4 className="text-base font-bold text-[#163A2D] font-['Playfair_Display',serif] mb-2 leading-snug group-hover:text-emerald-800 transition-colors">
+                      "{item.title}"
+                    </h4>
+
+                    {/* Authors */}
+                    <p className="text-xs text-amber-800 font-semibold mb-2">
+                      Authors: <span className="text-gray-600 font-normal">{item.authors}</span>
+                    </p>
+
+                    {/* Conference/Event Name */}
+                    <p className="text-xs text-gray-700 font-medium leading-relaxed mb-4">
+                      {item.conference}
+                    </p>
                   </div>
 
-                  {item.type && (
-                    <span className="inline-block px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-bold mb-2">
-                      {item.type}
+                  {/* Card Footer Details */}
+                  <div className="pt-3 border-t border-emerald-100/60 flex flex-wrap items-center justify-between text-xs text-gray-500 gap-2">
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                      {item.eventDate}
                     </span>
-                  )}
-
-                  <h4 className="text-base font-bold text-[#163A2D] font-['Playfair_Display',serif] mb-2 leading-snug">
-                    "{item.title}"
-                  </h4>
-
-                  <p className="text-xs text-amber-700 font-semibold mb-2">
-                    Authors: <span className="text-gray-600 font-normal">{item.authors}</span>
-                  </p>
-
-                  <p className="text-xs text-gray-700 font-medium leading-relaxed mb-4">
-                    {item.event}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-gray-100 flex flex-wrap items-center justify-between text-xs text-gray-500 gap-2">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-                    {item.date}
-                  </span>
-                  <span className="flex items-center gap-1 font-medium text-emerald-900">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-                    {item.location}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                    <span className="flex items-center gap-1 font-medium text-emerald-900">
+                      <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                      {item.location}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </section>
 
       </div>
