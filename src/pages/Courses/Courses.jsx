@@ -1,69 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
 import { 
   GraduationCap, Calendar, Award, ExternalLink, 
-  Sparkles, Clock, ShieldCheck, X, BookOpen 
+  Sparkles, ShieldCheck, X, Loader2, AlertCircle 
 } from "lucide-react";
 
 // Banner Background Image
 import bgBanner from "../../assets/HomeBG.png"; 
 
-// Course Certificate Images (আপনার প্রোজেক্টের পাথ অনুযায়ী অ্যাডভাস্ট করে নিন)
-import courseCert1 from "../../assets/courseCert1.png"; // Alison Certificate
-import courseCert2 from "../../assets/courseCert2.png"; // AI-Quest Certificate
-import courseCert3 from "../../assets/courseCert3.png"; // Research Help BD Certificate
-import courseCert4 from "../../assets/courseCert4.png"; // 10 Minute School Certificate
-
 const Courses = () => {
   const [selectedCert, setSelectedCert] = useState(null);
+  const [coursesData, setCoursesData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Extracted Course Data from Image
-  const coursesData = [
-    {
-      id: 1,
-      title: "Certified Blockchain Security Examiner (CBSE) – Level 1",
-      provider: "Alison.com",
-      certNumber: "4618-53782785",
-      type: "Online Course",
-      duration: "Self-Paced",
-      awardedDate: "8th November, 2025",
-      certificate: courseCert1,
-      link: "#", // প্রয়োজন হলে লিঙ্ক বসাতে পারেন
-    },
-    {
-      id: 2,
-      title: "Data Science & Machine Learning With Python",
-      provider: "AI-Quest",
-      certNumber: "ML00304",
-      type: "Professional Certification",
-      duration: "3 months",
-      awardedDate: "1st November, 2021",
-      certificate: courseCert2,
-      link: "#",
-    },
-    {
-      id: 3,
-      title: "Research Course Basic to Advance",
-      provider: "Research Help Bangladesh",
-      certNumber: "N/A",
-      type: "Research Training",
-      duration: "3 months",
-      awardedDate: "1st February, 2022",
-      certificate: courseCert3,
-      link: "#",
-    },
-    {
-      id: 4,
-      title: "Web Design",
-      provider: "Robi 10 Minute School",
-      certNumber: "N/A",
-      type: "Online Course",
-      duration: "Self-Paced",
-      awardedDate: "3rd November, 2021",
-      certificate: courseCert4,
-      link: "#",
-    },
-  ];
+  // Fetch API Data for Courses
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/courses");
+        const data = Array.isArray(response.data)
+          ? response.data
+          : response.data.data || [];
+        setCoursesData(data);
+      } catch (err) {
+        console.error("Failed to fetch courses data:", err);
+        setError("Failed to load completed courses.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
 
   return (
     <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-xl lg:rounded-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
@@ -111,79 +81,108 @@ const Courses = () => {
           </span>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center gap-3 py-16 font-sans">
+            <Loader2 className="w-9 h-9 animate-spin text-emerald-700" />
+            <p className="text-sm text-gray-600 font-medium animate-pulse">
+              Fetching completed courses...
+            </p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && !loading && (
+          <div className="bg-rose-50 p-6 rounded-2xl border border-rose-200 text-center space-y-2 font-sans">
+            <AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
+            <p className="text-xs sm:text-sm text-rose-700 font-medium">{error}</p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && coursesData.length === 0 && (
+          <div className="bg-white/80 rounded-2xl p-8 text-center border border-dashed border-gray-300 font-sans">
+            <GraduationCap className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+            <p className="text-sm text-gray-500">No courses available at the moment.</p>
+          </div>
+        )}
+
         {/* COURSE CARDS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
-          {coursesData.map((course) => (
-            <motion.div
-              key={course.id}
-              whileHover={{ y: -4 }}
-              className="bg-white rounded-2xl border border-emerald-100 p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                {/* Certificate Thumbnail / Preview */}
-                <div
-                  onClick={() => setSelectedCert(course.certificate)}
-                  className="relative group mb-5 rounded-xl overflow-hidden border border-gray-200 cursor-pointer bg-gray-50 aspect-[16/10] flex items-center justify-center"
-                >
-                  <img
-                    src={course.certificate}
-                    alt={course.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-[#163A2D]/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-2">
-                    <Award className="w-4 h-4 text-amber-400" />
-                    View Certificate
-                  </div>
-                </div>
+        {!loading && !error && coursesData.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
+            {coursesData.map((course) => (
+              <motion.div
+                key={course._id || course.title}
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.3 }}
+                className="group bg-white/90 backdrop-blur-md rounded-2xl border border-emerald-100/80 p-6 shadow-sm hover:shadow-xl hover:border-emerald-300/80 transition-all flex flex-col justify-between relative overflow-hidden"
+              >
+                {/* Glowing hover effect background */}
+                <div className="absolute -right-12 -top-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-amber-500/15 transition-all duration-500 pointer-events-none" />
 
-                {/* Badges */}
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-bold">
-                    {course.provider}
-                  </span>
-                  <span className="px-2.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[11px] font-bold">
-                    {course.type}
-                  </span>
-                </div>
-
-                {/* Course Title */}
-                <h3 className="text-lg font-bold text-[#163A2D] font-['Playfair_Display',serif] mb-3 leading-snug">
-                  {course.title}
-                </h3>
-
-                {/* Details */}
-                <div className="space-y-1.5 text-xs text-gray-600 mb-5">
-                  {course.certNumber !== "N/A" && (
-                    <p className="flex items-center gap-1.5 text-gray-700">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                      <span className="font-semibold text-gray-800">Cert No:</span> {course.certNumber}
-                    </p>
+                <div>
+                  {/* Certificate Thumbnail / Preview */}
+                  {course.certificateUrl && (
+                    <div
+                      onClick={() => setSelectedCert(course.certificateUrl)}
+                      className="relative group/img mb-5 rounded-xl overflow-hidden border border-emerald-100/80 cursor-pointer bg-slate-900 aspect-[16/10] flex items-center justify-center shadow-inner"
+                    >
+                      <img
+                        src={course.certificateUrl}
+                        alt={course.title}
+                        className="w-full h-full object-cover group-hover/img:scale-105 group-hover/img:opacity-80 transition-all duration-500"
+                      />
+                      <div className="absolute inset-0 bg-[#0C2219]/70 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white text-xs font-bold gap-2 backdrop-blur-[1px]">
+                        <Award className="w-4 h-4 text-amber-400" />
+                        <span>View Certificate</span>
+                      </div>
+                    </div>
                   )}
-                  <p className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-emerald-600" />
-                    <span className="font-semibold text-gray-800">Duration:</span> {course.duration}
-                  </p>
+
+                  {/* Organization Tag */}
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-bold">
+                      {course.organization}
+                    </span>
+                  </div>
+
+                  {/* Course Title */}
+                  <h3 className="text-lg font-bold text-[#163A2D] font-['Playfair_Display',serif] mb-3 leading-snug group-hover:text-emerald-800 transition-colors">
+                    {course.title}
+                  </h3>
+
+                  {/* Certificate Number */}
+                  {course.certificateNumber && course.certificateNumber !== "N/A" && (
+                    <div className="space-y-1.5 text-xs text-gray-600 mb-5">
+                      <p className="flex items-center gap-1.5 text-gray-700">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="font-semibold text-gray-800">Cert No:</span> {course.certificateNumber}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </div>
 
-              {/* Card Footer */}
-              <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-                  Awarded: {course.awardedDate}
-                </span>
+                {/* Card Footer */}
+                <div className="pt-4 border-t border-emerald-100/60 flex items-center justify-between text-xs text-gray-500">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                    Issued: {course.issueDate}
+                  </span>
 
-                <button
-                  onClick={() => setSelectedCert(course.certificate)}
-                  className="inline-flex items-center gap-1 text-emerald-800 font-semibold hover:text-emerald-600 transition-colors"
-                >
-                  <span>Preview</span>
-                  <ExternalLink className="w-3 h-3" />
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                  {course.certificateUrl && (
+                    <button
+                      onClick={() => setSelectedCert(course.certificateUrl)}
+                      className="inline-flex items-center gap-1 text-emerald-800 font-semibold hover:text-emerald-600 transition-colors"
+                    >
+                      <span>Preview</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
       </div>
 
