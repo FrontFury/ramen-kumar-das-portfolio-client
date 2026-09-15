@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navbar from "../pages/Shared/Navbar";
 import { Leaf, TreePine, Sparkles, Microscope } from "lucide-react";
+import ScrollToTop from "../pages/ScrollToTop/ScrollToTop";
 
 // =====================================================
 // FLOATING BOTANICAL & NATURE ICONS CONFIGURATION
@@ -70,6 +71,7 @@ const Main = () => {
       </div>
 
       {/* Navigation Bar */}
+      <ScrollToTop />
       <Navbar />
 
       {/* Dynamic Route Pages - Fixed Navbar এর জন্য pt-20 sm:pt-24 এবং নিচ থেকে স্পেসের জন্য mb-12 যোগ করা হয়েছে */}
