@@ -19,21 +19,21 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-[#163A2D] text-white sticky top-0 z-50 shadow-md font-['Playfair_Display',serif]">
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-20">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-[#163A2D]/95 backdrop-blur-md text-white shadow-md font-['Playfair_Display',serif] border-b border-emerald-900/30">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-16">
         <div className="flex items-center justify-between h-16 sm:h-20">
           
-          {/* ==================== LEFT SIDE: BRAND / NAME ==================== */}
+          {/* BRAND / NAME */}
           <div className="flex-shrink-0">
             <NavLink 
               to="/" 
-              className="text-lg sm:text-2xl font-bold tracking-wide hover:text-emerald-200 transition-colors duration-200"
+              className="text-lg sm:text-2xl font-bold tracking-wide text-amber-300 hover:text-white transition-colors duration-200"
             >
               Ramen Kumar Das
             </NavLink>
           </div>
 
-          {/* ==================== RIGHT SIDE: DESKTOP NAV LINKS ==================== */}
+          {/* DESKTOP NAV LINKS */}
           <div className="hidden lg:flex items-center space-x-1 xl:space-x-2 text-sm">
             {navItems.map((item) => (
               <NavLink
@@ -41,10 +41,10 @@ const Navbar = () => {
                 to={item.path}
                 end={item.path === "/"}
                 className={({ isActive }) => `
-                  px-3 py-2 rounded-md font-medium transition-all duration-200 whitespace-nowrap
+                  px-3 py-2 rounded-md font-sans text-xs xl:text-sm font-medium transition-all duration-200 whitespace-nowrap
                   ${
                     isActive
-                      ? "text-white font-bold border-b-2 border-emerald-400 bg-white/10"
+                      ? "text-amber-300 font-bold border-b-2 border-amber-400 bg-white/10"
                       : "text-gray-200 hover:text-white hover:bg-white/5"
                   }
                 `}
@@ -54,12 +54,12 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* ==================== MOBILE HAMBURGER BUTTON ==================== */}
+          {/* MOBILE HAMBURGER BUTTON */}
           <div className="flex lg:hidden">
             <button
               onClick={() => setIsOpen((prev) => !prev)}
               type="button"
-              className="p-2 rounded-md text-gray-200 hover:text-white hover:bg-[#123025] focus:outline-none cursor-pointer"
+              className="p-2 rounded-lg text-gray-200 hover:text-white hover:bg-[#123025] focus:outline-none cursor-pointer border border-emerald-800/40"
               aria-label="Toggle Menu"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -68,9 +68,9 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* ==================== MOBILE MENU DROPDOWN ==================== */}
+      {/* MOBILE MENU DROPDOWN */}
       {isOpen && (
-        <div className="lg:hidden bg-[#123025] border-t border-emerald-800/50 px-4 pt-2 pb-6 space-y-1 transition-all duration-300">
+        <div className="lg:hidden bg-[#123025] border-t border-emerald-800/50 px-4 pt-2 pb-6 space-y-1 font-sans shadow-2xl">
           {navItems.map((item) => (
             <NavLink
               key={item.id}
@@ -78,10 +78,10 @@ const Navbar = () => {
               end={item.path === "/"}
               onClick={() => setIsOpen(false)}
               className={({ isActive }) => `
-                block px-3 py-2.5 rounded-md text-base font-medium transition-colors duration-200
+                block px-3 py-2.5 rounded-md text-sm font-medium transition-colors duration-200
                 ${
                   isActive
-                    ? "bg-emerald-900/60 text-white font-bold border-l-4 border-emerald-400 pl-4"
+                    ? "bg-emerald-900/80 text-amber-300 font-bold border-l-4 border-amber-400 pl-4"
                     : "text-gray-200 hover:bg-white/5 hover:text-white"
                 }
               `}
