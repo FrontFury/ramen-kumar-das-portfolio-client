@@ -1,45 +1,39 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
 import { 
   GraduationCap, Calendar, Sparkles, Building2, 
-  Award, BookOpen, CheckCircle2 
+  Award, Loader2, AlertCircle, ExternalLink, X, BookOpen 
 } from "lucide-react";
 
 // Banner Background Image
 import bgBanner from "../../assets/HomeBG.png"; 
 
 const Academics = () => {
-  // Extracted Academic Degree Data
-  const academicDegrees = [
-    {
-      id: 1,
-      degree: "M.Sc. Eng. in Information Security",
-      status: "Ongoing",
-      institution: "Bangladesh University of Engineering & Technology (BUET)",
-      department: "Institute of Information & Communication Technology (IICT)",
-      timeline: "September 2024 - Present",
-      grade: "More than 80% marks",
-      highlights: [
-        "Advanced Information Security Concepts",
-        "Cryptography & Network Defense",
-        "Cyber Threat Analysis & Resilient Systems",
-      ],
-    },
-    {
-      id: 2,
-      degree: "B.Sc. in Information & Communication Engineering",
-      status: "Completed",
-      institution: "Pabna University of Science & Technology",
-      department: "Department of Information & Communication Engineering",
-      timeline: "2013 - 2018",
-      grade: "CGPA 3.30 out of 4.00",
-      highlights: [
-        "Core Telecommunication & Networking",
-        "Algorithms & Data Structures",
-        "Signal Processing & System Architecture",
-      ],
-    },
-  ];
+  const [academicDegrees, setAcademicDegrees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedCert, setSelectedCert] = useState(null);
+
+  // Fetch API Data for Academics
+  useEffect(() => {
+    const fetchAcademics = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/academics");
+        const data = Array.isArray(response.data)
+          ? response.data
+          : response.data.data || [];
+        setAcademicDegrees(data);
+      } catch (err) {
+        console.error("Failed to fetch academic data:", err);
+        setError("Failed to load academic qualifications.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAcademics();
+  }, []);
 
   return (
     <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-xl lg:rounded-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
@@ -87,82 +81,154 @@ const Academics = () => {
           </span>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center gap-3 py-16 font-sans">
+            <Loader2 className="w-9 h-9 animate-spin text-emerald-700" />
+            <p className="text-sm text-gray-600 font-medium animate-pulse">
+              Fetching academic qualifications...
+            </p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && !loading && (
+          <div className="bg-rose-50 p-6 rounded-2xl border border-rose-200 text-center space-y-2 font-sans">
+            <AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
+            <p className="text-xs sm:text-sm text-rose-700 font-medium">{error}</p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && academicDegrees.length === 0 && (
+          <div className="bg-white/80 rounded-2xl p-8 text-center border border-dashed border-gray-300 font-sans">
+            <GraduationCap className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+            <p className="text-sm text-gray-500">No academic qualifications found.</p>
+          </div>
+        )}
+
         {/* DEGREE TIMELINE / CARDS */}
-        <div className="space-y-8 font-sans">
-          {academicDegrees.map((item) => (
-            <motion.div
-              key={item.id}
-              whileHover={{ y: -3 }}
-              className="bg-white rounded-2xl p-6 sm:p-8 border border-emerald-100 shadow-sm hover:shadow-md transition-all relative overflow-hidden flex flex-col md:flex-row gap-6 justify-between"
-            >
-              <div className="space-y-4 flex-1">
-                {/* Badges */}
-                <div className="flex flex-wrap items-center gap-2">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      item.status === "Ongoing"
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-emerald-100 text-emerald-800"
-                    }`}
-                  >
-                    • {item.status}
-                  </span>
-                  <span className="text-xs text-gray-500 font-medium flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-                    {item.timeline}
-                  </span>
-                </div>
+        {!loading && !error && academicDegrees.length > 0 && (
+          <div className="space-y-8 font-sans">
+            {academicDegrees.map((item) => {
+              const isOngoing = item.degree?.toLowerCase().includes("ongoing");
 
-                {/* Degree Title */}
-                <h3 className="text-xl sm:text-2xl font-bold text-[#163A2D] font-['Playfair_Display',serif] leading-snug">
-                  {item.degree}
-                </h3>
+              return (
+                <motion.div
+                  key={item._id || item.degree}
+                  whileHover={{ y: -4 }}
+                  transition={{ duration: 0.3 }}
+                  className="group bg-white/90 backdrop-blur-md rounded-2xl p-6 sm:p-8 border border-emerald-100/80 shadow-sm hover:shadow-xl hover:border-emerald-300/80 transition-all relative overflow-hidden flex flex-col md:flex-row gap-6 justify-between items-start md:items-center"
+                >
+                  {/* Background Glow Effect */}
+                  <div className="absolute -right-12 -top-12 w-36 h-36 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-amber-500/15 transition-all duration-500 pointer-events-none" />
 
-                {/* University Info */}
-                <div className="space-y-1 text-sm text-gray-700">
-                  <p className="font-semibold text-emerald-900 flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                    {item.institution}
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-600 pl-6">
-                    {item.department}
-                  </p>
-                </div>
-
-                {/* Focus Areas */}
-                <div className="pt-3 border-t border-gray-100">
-                  <p className="text-xs font-semibold text-emerald-800 uppercase tracking-wider mb-2 flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5" /> Key Focus & Topics
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {item.highlights.map((highlight, idx) => (
+                  <div className="space-y-4 flex-1">
+                    {/* Timeline & Status Badge */}
+                    <div className="flex flex-wrap items-center gap-2">
                       <span
-                        key={idx}
-                        className="text-xs bg-gray-50 border border-gray-200 text-gray-700 px-3 py-1 rounded-md flex items-center gap-1"
+                        className={`px-3 py-1 rounded-full text-xs font-bold ${
+                          isOngoing
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-emerald-100 text-emerald-800"
+                        }`}
                       >
-                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                        {highlight}
+                        • {isOngoing ? "Ongoing" : "Completed"}
                       </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
+                      {item.duration && (
+                        <span className="text-xs text-gray-500 font-medium flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                          {item.duration}
+                        </span>
+                      )}
+                    </div>
 
-              {/* Grade / CGPA Highlight Box */}
-              <div className="md:w-56 shrink-0 flex flex-col justify-center items-center p-5 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200/60 text-center">
-                <Award className="w-8 h-8 text-emerald-700 mb-2" />
-                <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1">
-                  Performance
-                </span>
-                <span className="text-base sm:text-lg font-bold text-[#163A2D] font-['Playfair_Display',serif]">
-                  {item.grade}
-                </span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                    {/* Degree Title */}
+                    <h3 className="text-xl sm:text-2xl font-bold text-[#163A2D] font-['Playfair_Display',serif] leading-snug group-hover:text-emerald-800 transition-colors">
+                      {item.degree}
+                    </h3>
+
+                    {/* University Info */}
+                    <div className="space-y-1 text-sm text-gray-700">
+                      <p className="font-semibold text-emerald-900 flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-emerald-700 shrink-0" />
+                        {item.institution}
+                      </p>
+                      {item.department && (
+                        <p className="text-xs sm:text-sm text-gray-600 pl-6 flex items-center gap-1.5">
+                          <BookOpen className="w-3.5 h-3.5 text-emerald-600/70 shrink-0" />
+                          {item.department}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Certificate Preview Link */}
+                    {item.certificateUrl && (
+                      <div className="pt-2">
+                        <button
+                          onClick={() => setSelectedCert(item.certificateUrl)}
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 hover:text-emerald-600 transition-colors bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200/60"
+                        >
+                          <Award className="w-3.5 h-3.5 text-amber-600" />
+                          <span>View Certificate / Document</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Grade / CGPA Highlight Box */}
+                  {item.cgpa && item.cgpa !== "N/A" && (
+                    <div className="w-full md:w-52 shrink-0 flex flex-col justify-center items-center p-5 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200/60 text-center shadow-inner">
+                      <Award className="w-8 h-8 text-emerald-700 mb-2" />
+                      <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1">
+                        Result / CGPA
+                      </span>
+                      <span className="text-base sm:text-lg font-bold text-[#163A2D] font-['Playfair_Display',serif]">
+                        {item.cgpa}
+                      </span>
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
 
       </div>
+
+      {/* LIGHTBOX MODAL FOR CERTIFICATE FULL VIEW */}
+      <AnimatePresence>
+        {selectedCert && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedCert(null)}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-4xl w-full bg-white rounded-2xl overflow-hidden p-2 shadow-2xl"
+            >
+              <button
+                onClick={() => setSelectedCert(null)}
+                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 text-white hover:bg-black transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <img
+                src={selectedCert}
+                alt="Certificate / Document View"
+                className="w-full h-auto max-h-[85vh] object-contain rounded-xl"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
