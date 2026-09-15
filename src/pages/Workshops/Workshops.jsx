@@ -15,6 +15,9 @@ import {
   Tag
 } from "lucide-react";
 
+// Banner Background Image
+import bgBanner from "../../assets/HomeBG.png"; 
+
 const Workshops = () => {
   const [workshops, setWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,7 +46,7 @@ const Workshops = () => {
 
   if (loading) {
     return (
-      <div className="w-full py-12 bg-[#F4F9F5]/60 flex flex-col items-center justify-center gap-3 font-sans">
+      <div className="w-full py-20 bg-[#F4F9F5]/60 flex flex-col items-center justify-center gap-3 font-sans">
         <Loader2 className="w-10 h-10 animate-spin text-[#163A2D]" />
         <p className="text-sm font-semibold text-[#163A2D] animate-pulse">
           Loading Workshops & Seminars...
@@ -54,7 +57,7 @@ const Workshops = () => {
 
   if (error) {
     return (
-      <div className="w-full bg-[#F4F9F5]/60 flex items-center justify-center p-4 font-sans">
+      <div className="w-full bg-[#F4F9F5]/60 flex items-center justify-center p-8 font-sans">
         <div className="bg-white p-8 rounded-2xl shadow-sm border border-red-100 max-w-md text-center space-y-3">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto opacity-80" />
           <h3 className="text-lg font-bold text-gray-800">Connection Error</h3>
@@ -65,26 +68,50 @@ const Workshops = () => {
   }
 
   return (
-    <section className="w-full bg-[#F4F9F5]/60 pt-6 pb-12 px-4 sm:px-6 lg:px-8 font-sans text-gray-800">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="w-full bg-[#F4F9F5]/60 text-gray-800 rounded-xl lg:rounded-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
+      
+      {/* 1. HERO BANNER SECTION */}
+      <section
+        className="relative min-h-[360px] md:min-h-[420px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-xl lg:rounded-3xl overflow-hidden shadow-md"
+        style={{
+          backgroundImage: `url(${bgBanner})`,
+        }}
+      >
+        {/* Dark Overlay for Contrast */}
+        <div className="absolute inset-0 bg-[#0C2219]/75 backdrop-blur-[2px]" />
+
+        <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 border border-white/30 backdrop-blur-md text-xs sm:text-sm tracking-widest text-amber-300 uppercase mb-6 font-sans shadow-sm">
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            <span>Training & Extracurricular Activities</span>
+          </div>
+
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-amber-300 tracking-tight leading-tight mb-4 drop-shadow-sm">
+            Workshops & Seminars
+          </h1>
+
+          <p className="text-sm sm:text-base text-gray-100 max-w-2xl font-sans font-light leading-relaxed">
+            Professional development, interactive training sessions, academic seminars, and co-curricular achievements.
+          </p>
+        </div>
+      </section>
+
+      {/* 2. MAIN CONTENT AREA */}
+      <div className="py-12 sm:py-16 px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto space-y-10 font-sans">
         
         {/* SECTION HEADER */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-emerald-900/10 pb-4 gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-emerald-900/10 pb-6 gap-2">
           <div className="flex items-center gap-3">
-            <span className="w-2.5 h-7 bg-[#163A2D] rounded-full inline-block" />
-            <h1 className="text-3xl sm:text-4xl font-bold font-['Playfair_Display',serif] text-[#163A2D]">
-              Workshops & Seminars
-            </h1>
+            <span className="w-2.5 h-8 bg-[#163A2D] rounded-full inline-block" />
+            <h2 className="text-2xl sm:text-4xl font-bold font-['Playfair_Display',serif] text-[#163A2D]">
+              Programs & Competitions
+            </h2>
           </div>
-          <span className="text-xs tracking-widest text-emerald-800 uppercase font-semibold flex items-center gap-1.5 bg-emerald-100/60 px-3 py-1 rounded-full">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            Training & Extracurricular Activities
-          </span>
         </div>
 
         {/* Empty State */}
         {workshops.length === 0 && (
-          <div className="text-center py-16 bg-white/80 rounded-3xl border border-dashed border-emerald-200 space-y-3">
+          <div className="text-center py-16 bg-white/80 rounded-3xl border border-dashed border-emerald-200 space-y-3 font-sans">
             <Presentation className="w-12 h-12 text-emerald-600 mx-auto opacity-40" />
             <h3 className="text-base font-bold text-gray-700">No Records Found</h3>
             <p className="text-xs text-gray-500">Check back later for updated workshops and achievements.</p>
@@ -93,7 +120,7 @@ const Workshops = () => {
 
         {/* WORKSHOPS GRID */}
         {workshops.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-sans">
             {workshops.map((item, idx) => {
               const isCompetition = item.type?.toLowerCase().includes("sports") || 
                                     item.type?.toLowerCase().includes("competition") ||
@@ -102,7 +129,7 @@ const Workshops = () => {
               return (
                 <div
                   key={item._id || idx}
-                  className="group relative bg-white/80 backdrop-blur-md rounded-2xl border border-emerald-100/80 shadow-2xs hover:shadow-md hover:border-emerald-200 transition-all duration-300 p-5 flex flex-col justify-between overflow-hidden"
+                  className="group relative bg-white rounded-2xl border border-emerald-100/80 shadow-2xs hover:shadow-xl hover:border-emerald-200 transition-all duration-300 p-5 flex flex-col justify-between overflow-hidden"
                 >
                   {/* Top Glow Accent */}
                   <div className={`absolute top-0 left-6 right-6 h-[2px] bg-gradient-to-r from-transparent ${isCompetition ? 'via-amber-400' : 'via-emerald-400'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
@@ -168,7 +195,7 @@ const Workshops = () => {
                     <div className="pt-4 mt-3 border-t border-emerald-100/60 flex items-center justify-end">
                       <button
                         onClick={() => setSelectedCert(item.certificateUrl)}
-                        className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 hover:text-emerald-600 transition-colors"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 hover:text-emerald-600 transition-colors cursor-pointer"
                       >
                         <span>Preview Certificate</span>
                         <ExternalLink className="w-3 h-3" />
@@ -192,7 +219,7 @@ const Workshops = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedCert(null)}
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 font-sans"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -203,7 +230,7 @@ const Workshops = () => {
             >
               <button
                 onClick={() => setSelectedCert(null)}
-                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 text-white hover:bg-black transition-colors"
+                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 text-white hover:bg-black transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -217,7 +244,7 @@ const Workshops = () => {
         )}
       </AnimatePresence>
 
-    </section>
+    </div>
   );
 };
 
