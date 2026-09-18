@@ -12,7 +12,7 @@ const AwardBanner = () => {
       />
 
       {/* Dark Forest Overlay */}
-      <div className="absolute inset-0 bg-[#0c2219]/75 backdrop-blur-[1px]" />
+      <div className="absolute inset-0 bg-[#0C2219] opacity-50 backdrop-blur-[1px]" />
 
       {/* Content Container */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 text-center flex flex-col items-center justify-center">

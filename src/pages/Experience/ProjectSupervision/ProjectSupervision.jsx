@@ -11,7 +11,10 @@ import {
   CheckCircle2, 
   UserCheck, 
   IdCard, 
-  Calendar 
+  Calendar,
+  FileText,
+  Presentation,
+  ExternalLink
 } from "lucide-react";
 
 const ProjectSupervision = () => {
@@ -43,7 +46,7 @@ const ProjectSupervision = () => {
 
   if (isLoading) {
     return (
-      <div className="w-full py-12 bg-[#F4F9F5]/60 flex flex-col items-center justify-center gap-3 font-sans">
+      <div className="w-full py-16 bg-[#F4F9F5]/60 flex flex-col items-center justify-center gap-3 font-sans">
         <Loader2 className="w-10 h-10 animate-spin text-[#163A2D]" />
         <p className="text-sm font-semibold text-[#163A2D] animate-pulse">
           Loading Supervised Projects...
@@ -55,7 +58,7 @@ const ProjectSupervision = () => {
   if (isError) {
     return (
       <div className="w-full bg-[#F4F9F5]/60 flex items-center justify-center p-4 font-sans">
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-red-100 max-w-md text-center space-y-3">
+        <div className="bg-white p-8 rounded-2xl shadow-xs border border-red-100 max-w-md text-center space-y-3">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto opacity-80" />
           <h3 className="text-lg font-bold text-gray-800">Connection Error</h3>
           <p className="text-xs text-gray-500">
@@ -156,6 +159,8 @@ const ProjectSupervision = () => {
 
 // SUB-COMPONENT: PROJECT CARD
 const ProjectCard = ({ project, isOngoing }) => {
+  const hasResources = project.reportUrl || project.presentationUrl;
+
   return (
     <div className="group relative bg-white/80 backdrop-blur-md rounded-2xl border border-emerald-100/80 shadow-2xs hover:shadow-md hover:border-emerald-200 transition-all duration-300 p-6 flex flex-col justify-between overflow-hidden">
       
@@ -181,7 +186,7 @@ const ProjectCard = ({ project, isOngoing }) => {
           )}
         </div>
 
-        {/* Project Preview Image (If available) */}
+        {/* Project Preview Image */}
         {project.image && (
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-gray-100 border border-emerald-50">
             <img
@@ -236,6 +241,42 @@ const ProjectCard = ({ project, isOngoing }) => {
           </div>
         )}
       </div>
+
+      {/* NEW: Project Resources & Links (Report & Presentation) */}
+      {hasResources && (
+        <div className="mt-5 pt-4 border-t border-emerald-900/10 space-y-2">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+            Project Deliverables
+          </p>
+          <div className="flex flex-wrap items-center gap-2.5">
+            {project.reportUrl && (
+              <a
+                href={project.reportUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 min-w-[130px] inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-blue-50/80 hover:bg-blue-100 text-blue-700 border border-blue-200/80 rounded-xl text-xs font-semibold transition-all duration-200 group/btn shadow-2xs"
+              >
+                <FileText className="w-3.5 h-3.5 text-blue-600 group-hover/btn:scale-110 transition-transform" />
+                <span>Full Report</span>
+                <ExternalLink className="w-3 h-3 opacity-60 ml-auto" />
+              </a>
+            )}
+
+            {project.presentationUrl && (
+              <a
+                href={project.presentationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 min-w-[130px] inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-purple-50/80 hover:bg-purple-100 text-purple-700 border border-purple-200/80 rounded-xl text-xs font-semibold transition-all duration-200 group/btn shadow-2xs"
+              >
+                <Presentation className="w-3.5 h-3.5 text-purple-600 group-hover/btn:scale-110 transition-transform" />
+                <span>Presentation</span>
+                <ExternalLink className="w-3 h-3 opacity-60 ml-auto" />
+              </a>
+            )}
+          </div>
+        </div>
+      )}
 
     </div>
   );

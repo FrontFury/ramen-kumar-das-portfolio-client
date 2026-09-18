@@ -15,6 +15,7 @@ import homeBgImage from "../../../assets/HomeBG.png";
 import { FaGithub, FaOrcid } from "react-icons/fa6";
 import { FaFacebookF, FaLinkedin, FaYoutube, FaMicrosoft } from "react-icons/fa";
 import profileImg from "../../../assets/Profile01.png";
+import MemberShip from "../MemberShip/MemberShip";
 
 const Home = () => {
   return (
@@ -29,7 +30,7 @@ const Home = () => {
         }}
       >
         {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-[#0C2219]/75 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-[#0C2219] opacity-50 backdrop-blur-[2px]" />
 
         <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
           {/* Badge */}
@@ -223,6 +224,11 @@ const Home = () => {
       </section>
 
       {/* ==========================================
+          MEMBERSHIP SECTION (ADDED HERE)
+      ========================================== */}
+      <MemberShip />
+
+      {/* ==========================================
           ABOUT SECTION
       ========================================== */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -281,7 +287,7 @@ const Home = () => {
               </footer>
             </blockquote>
 
-            {/* Stats / Info Grid (Updated Layout to Keep Lines Minimal) */}
+            {/* Stats / Info Grid */}
             <div className="flex flex-col gap-4 pt-4">
               {/* Focus Area - Full Width */}
               <div className="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm">

@@ -55,7 +55,7 @@ const Tools = () => {
           backgroundImage: `url(${bgBanner})`,
         }}
       >
-        <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-[#0C2219] opacity-50 backdrop-blur-[2px]" />
 
         <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-xs sm:text-sm tracking-widest text-amber-300 uppercase mb-6 font-sans">
