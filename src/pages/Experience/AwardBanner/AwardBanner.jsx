@@ -1,10 +1,10 @@
 import React from "react";
 import { Award } from "lucide-react";
-import bgImage from "../../../assets/AwardBanner.jpg"; 
+import bgImage from "../../../assets/AwardsBanner.png"; 
 
 const AwardBanner = () => {
   return (
-    <section className="relative w-full overflow-hidden bg-slate-900 font-sans text-white py-20 md:py-28 lg:py-36">
+    <section className="relative w-full rounded-t-xl lg:rounded-t-3xl overflow-hidden bg-slate-900 font-sans text-white py-20 md:py-28 lg:py-36">
       {/* Background Image Container */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"

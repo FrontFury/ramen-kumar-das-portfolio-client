@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 
 // Banner Background Image
-import bgBanner from "../../assets/HomeBG.png"; 
+import bgBanner from "../../assets/ContactBAnner.jpeg"; 
 
 const Contact = () => {
   const [copiedText, setCopiedText] = useState("");
@@ -50,11 +50,11 @@ const Contact = () => {
   };
 
   return (
-    <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-xl lg:rounded-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
+    <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-t-xl lg:rounded-t-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
       
       {/* 1. HERO BANNER */}
       <section
-        className="relative min-h-[360px] md:min-h-[420px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-xl lg:rounded-3xl overflow-hidden shadow-md"
+        className="relative min-h-[360px] md:min-h-[580px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-t-xl lg:rounded-t-3xl overflow-hidden shadow-md"
         style={{
           backgroundImage: `url(${bgBanner})`,
         }}

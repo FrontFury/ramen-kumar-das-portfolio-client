@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../../hook/useAxiosSecure";
 import { 
   Eye, 
   CheckCircle2, 
@@ -14,28 +15,26 @@ import {
 } from "lucide-react";
 
 const AwardPage = () => {
-  const [awards, setAwards] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const axiosSecure = useAxiosSecure();
   const [activeImage, setActiveImage] = useState(null);
 
-  useEffect(() => {
-    const fetchAwards = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/awards");
-        setAwards(response.data);
-      } catch (err) {
-        console.error("Failed to fetch awards:", err);
-        setError("Failed to load awards details. Please check back later.");
-      }finally {
-        setLoading(false);
-      }
-    };
+  // Fetch API Data for Awards using TanStack Query
+  const { 
+    data: awards = [], 
+    isLoading, 
+    isError, 
+    error 
+  } = useQuery({
+    queryKey: ["awards"],
+    queryFn: async () => {
+      const response = await axiosSecure.get("/awards");
+      return Array.isArray(response.data)
+        ? response.data
+        : response.data.data || [];
+    },
+  });
 
-    fetchAwards();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="w-full py-12 bg-[#F4F9F5] flex flex-col items-center justify-center gap-3 font-sans">
         <Loader2 className="w-10 h-10 animate-spin text-[#163A2D]" />
@@ -46,13 +45,15 @@ const AwardPage = () => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="w-full bg-[#F4F9F5] flex items-center justify-center p-4 font-sans">
         <div className="bg-white p-8 rounded-2xl shadow-sm border border-red-100 max-w-md text-center space-y-3">
           <Award className="w-12 h-12 text-rose-500 mx-auto opacity-80" />
           <h3 className="text-lg font-bold text-gray-800">Something went wrong</h3>
-          <p className="text-xs text-gray-500">{error}</p>
+          <p className="text-xs text-gray-500">
+            {error?.message || "Failed to load awards details. Please check back later."}
+          </p>
         </div>
       </div>
     );

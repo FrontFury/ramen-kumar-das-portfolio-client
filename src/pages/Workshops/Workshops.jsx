@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../hook/useAxiosSecure";
 import { 
   Presentation, 
   Calendar, 
@@ -16,37 +17,31 @@ import {
 } from "lucide-react";
 
 // Banner Background Image
-import bgBanner from "../../assets/HomeBG.png"; 
+import bgBanner from "../../assets/WorkshopBanner.png"; 
 
 const Workshops = () => {
-  const [workshops, setWorkshops] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const axiosSecure = useAxiosSecure();
   const [selectedCert, setSelectedCert] = useState(null);
 
-  // Fetch API Data
-  useEffect(() => {
-    const fetchWorkshops = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/workshops");
-        const data = Array.isArray(response.data)
-          ? response.data
-          : response.data.data || [];
-        setWorkshops(data);
-      } catch (err) {
-        console.error("Error fetching workshops data:", err);
-        setError("Failed to load workshops and seminars. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Fetch API Data using TanStack Query
+  const {
+    data: workshops = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["workshops"],
+    queryFn: async () => {
+      const response = await axiosSecure.get("/workshops");
+      return Array.isArray(response.data)
+        ? response.data
+        : response.data.data || [];
+    },
+  });
 
-    fetchWorkshops();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="w-full py-20 bg-[#F4F9F5]/60 flex flex-col items-center justify-center gap-3 font-sans">
+      <div className="w-full py-20 bg-[#F4F9F5]/60 flex flex-col  items-center justify-center gap-3 font-sans">
         <Loader2 className="w-10 h-10 animate-spin text-[#163A2D]" />
         <p className="text-sm font-semibold text-[#163A2D] animate-pulse">
           Loading Workshops & Seminars...
@@ -55,24 +50,26 @@ const Workshops = () => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="w-full bg-[#F4F9F5]/60 flex items-center justify-center p-8 font-sans">
         <div className="bg-white p-8 rounded-2xl shadow-sm border border-red-100 max-w-md text-center space-y-3">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto opacity-80" />
           <h3 className="text-lg font-bold text-gray-800">Connection Error</h3>
-          <p className="text-xs text-gray-500">{error}</p>
+          <p className="text-xs text-gray-500">
+            {error?.message || "Failed to load workshops and seminars. Please try again later."}
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-[#F4F9F5]/60 text-gray-800 rounded-xl lg:rounded-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
+    <div className="w-full bg-[#F4F9F5]/60 text-gray-800 rounded-t-xl lg:rounded-t-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
       
       {/* 1. HERO BANNER SECTION */}
       <section
-        className="relative min-h-[360px] md:min-h-[420px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-xl lg:rounded-3xl overflow-hidden shadow-md"
+        className="relative min-h-[360px] md:min-h-[580px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-t-xl lg:rounded-t-3xl overflow-hidden shadow-md"
         style={{
           backgroundImage: `url(${bgBanner})`,
         }}

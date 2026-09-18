@@ -21,16 +21,16 @@ export const router = createBrowserRouter([
         element: <Home />,
       },
       {
+        path: "research-interest",
+        element: <Research />,
+      },
+      {
         path: "awards-experience",
         element: <Experience />,
       },
       {
         path: "research-tools",
         element: <Tools />,
-      },
-      {
-        path: "research-interest",
-        element: <Research />,
       },
       {
         path: "completed-courses",

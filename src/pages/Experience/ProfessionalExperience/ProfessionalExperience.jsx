@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../../hook/useAxiosSecure";
 import { 
   Briefcase, 
   Calendar, 
@@ -14,26 +15,23 @@ import {
 } from "lucide-react";
 
 const ProfessionalExperience = () => {
-  const [experiences, setExperiences] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const axiosSecure = useAxiosSecure();
 
-  useEffect(() => {
-    const fetchExperiences = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/experiences");
-        const data = Array.isArray(response.data) ? response.data : response.data.data || [];
-        setExperiences(data);
-      } catch (err) {
-        console.error("Error fetching experiences:", err);
-        setError("Failed to load experience data. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchExperiences();
-  }, []);
+  // Fetch API Data for Experiences using TanStack Query
+  const { 
+    data: experiences = [], 
+    isLoading, 
+    isError, 
+    error 
+  } = useQuery({
+    queryKey: ["experiences"],
+    queryFn: async () => {
+      const response = await axiosSecure.get("/experiences");
+      return Array.isArray(response.data) 
+        ? response.data 
+        : response.data.data || [];
+    },
+  });
 
   const formatPeriod = (startDate, endDate, currentlyWorking) => {
     if (!startDate && !endDate) return "N/A";
@@ -50,7 +48,7 @@ const ProfessionalExperience = () => {
     return cleaned.split(",").map((item) => item.trim()).filter(Boolean);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="w-full py-12 bg-[#F4F9F5]/60 flex flex-col items-center justify-center gap-3 font-sans">
         <Loader2 className="w-10 h-10 animate-spin text-[#163A2D]" />
@@ -61,13 +59,15 @@ const ProfessionalExperience = () => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="w-full bg-[#F4F9F5]/60 flex items-center justify-center p-4 font-sans">
         <div className="bg-white p-8 rounded-2xl shadow-sm border border-red-100 max-w-md text-center space-y-3">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto opacity-80" />
           <h3 className="text-lg font-bold text-gray-800">Connection Error</h3>
-          <p className="text-xs text-gray-500">{error}</p>
+          <p className="text-xs text-gray-500">
+            {error?.message || "Failed to load experience data. Please try again later."}
+          </p>
         </div>
       </div>
     );

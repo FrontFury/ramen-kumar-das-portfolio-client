@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../hook/useAxiosSecure";
 import { 
   UserCheck, Mail, Phone, Building2, 
   GraduationCap, Copy, Check, Sparkles, ExternalLink,
@@ -8,33 +9,27 @@ import {
 } from "lucide-react";
 
 // Banner Background Image
-import bgBanner from "../../assets/HomeBG.png"; 
+import bgBanner from "../../assets/RefereesBanner.jpg"; 
 
 const Referees = () => {
-  const [refereesData, setRefereesData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const axiosSecure = useAxiosSecure();
   const [copiedText, setCopiedText] = useState("");
 
-  // Fetch API Data from Backend
-  useEffect(() => {
-    const fetchReferees = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/referees");
-        const data = Array.isArray(response.data)
-          ? response.data
-          : response.data.data || [];
-        setRefereesData(data);
-      } catch (err) {
-        console.error("Error fetching referees data:", err);
-        setError("Failed to load referee details. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchReferees();
-  }, []);
+  // Fetch API Data using TanStack Query
+  const { 
+    data: refereesData = [], 
+    isLoading, 
+    isError, 
+    error 
+  } = useQuery({
+    queryKey: ["referees"],
+    queryFn: async () => {
+      const response = await axiosSecure.get("/referees");
+      return Array.isArray(response.data)
+        ? response.data
+        : response.data.data || [];
+    },
+  });
 
   // Helper function to handle Copying to Clipboard
   const handleCopy = (text, key) => {
@@ -44,7 +39,7 @@ const Referees = () => {
     setTimeout(() => setCopiedText(""), 2000);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="w-full py-20 bg-[#F8FAFC] flex flex-col items-center justify-center gap-3 font-sans">
         <Loader2 className="w-10 h-10 animate-spin text-[#163A2D]" />
@@ -55,24 +50,26 @@ const Referees = () => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="w-full bg-[#F8FAFC] flex items-center justify-center p-8 font-sans">
         <div className="bg-white p-8 rounded-2xl shadow-sm border border-red-100 max-w-md text-center space-y-3">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto opacity-80" />
           <h3 className="text-lg font-bold text-gray-800">Connection Error</h3>
-          <p className="text-xs text-gray-500">{error}</p>
+          <p className="text-xs text-gray-500">
+            {error?.message || "Failed to load referee details. Please try again later."}
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-xl lg:rounded-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
+    <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-t-xl lg:rounded-t-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
       
       {/* 1. HERO BANNER */}
       <section
-        className="relative min-h-[360px] md:min-h-[420px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-xl lg:rounded-3xl overflow-hidden shadow-md"
+        className="relative min-h-[360px] md:min-h-[580px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-t-xl lg:rounded-t-3xl overflow-hidden shadow-md"
         style={{
           backgroundImage: `url(${bgBanner})`,
         }}

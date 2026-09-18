@@ -1,39 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../hook/useAxiosSecure";
 import { 
   BookOpen, Clock, Presentation, Brain, ExternalLink, 
   Sparkles, Calendar, MapPin, X, CheckCircle2, Award, Loader2, AlertCircle 
 } from "lucide-react";
 
 // Banner Background Image
-import bgBanner from "../../assets/HomeBG.png"; 
+import bgBanner from "../../assets/ResearchBanner.png"; 
 
 const Research = () => {
+  const axiosSecure = useAxiosSecure();
   const [selectedCert, setSelectedCert] = useState(null);
-  const [conferencePresentations, setConferencePresentations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  // Fetch API Data for Conference Presentations
-  useEffect(() => {
-    const fetchResearches = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/researches");
-        const data = Array.isArray(response.data)
-          ? response.data
-          : response.data.data || [];
-        setConferencePresentations(data);
-      } catch (err) {
-        console.error("Failed to fetch research data:", err);
-        setError("Failed to load conference presentations.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchResearches();
-  }, []);
+  // Fetch API Data for Conference Presentations using TanStack Query
+  const {
+    data: conferencePresentations = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["researches"],
+    queryFn: async () => {
+      const response = await axiosSecure.get("/researches");
+      return Array.isArray(response.data)
+        ? response.data
+        : response.data.data || [];
+    },
+  });
 
   // Published Journal Papers Data
   const publishedPapers = [
@@ -69,11 +64,11 @@ const Research = () => {
   ];
 
   return (
-    <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-xl lg:rounded-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
+    <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-t-xl lg:rounded-t-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
       
-      {/* 1. HERO BANNER */}
+      {/* 1. HERO BANNER (Height increased here) */}
       <section
-        className="relative min-h-[360px] md:min-h-[420px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-xl lg:rounded-3xl overflow-hidden shadow-md"
+        className="relative min-h-[480px] md:min-h-[580px] flex flex-col justify-center items-center text-center px-4 py-20 bg-cover bg-center bg-no-repeat rounded-t-xl lg:rounded-t-3xl overflow-hidden shadow-md"
         style={{
           backgroundImage: `url(${bgBanner})`,
         }}
@@ -232,7 +227,7 @@ const Research = () => {
           </div>
 
           {/* Loading State */}
-          {loading && (
+          {isLoading && (
             <div className="flex flex-col items-center justify-center gap-3 py-12 font-sans">
               <Loader2 className="w-9 h-9 animate-spin text-emerald-700" />
               <p className="text-sm text-gray-600 font-medium animate-pulse">
@@ -242,15 +237,17 @@ const Research = () => {
           )}
 
           {/* Error State */}
-          {error && !loading && (
+          {isError && (
             <div className="bg-rose-50 p-6 rounded-2xl border border-rose-200 text-center space-y-2 font-sans">
               <AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
-              <p className="text-xs sm:text-sm text-rose-700 font-medium">{error}</p>
+              <p className="text-xs sm:text-sm text-rose-700 font-medium">
+                {error?.message || "Failed to load conference presentations."}
+              </p>
             </div>
           )}
 
           {/* Empty State */}
-          {!loading && !error && conferencePresentations.length === 0 && (
+          {!isLoading && !isError && conferencePresentations.length === 0 && (
             <div className="bg-white/80 rounded-2xl p-8 text-center border border-dashed border-gray-300 font-sans">
               <Presentation className="w-8 h-8 text-gray-400 mx-auto mb-2" />
               <p className="text-sm text-gray-500">No conference presentations available.</p>
@@ -258,7 +255,7 @@ const Research = () => {
           )}
 
           {/* Eye-Catching Glassmorphic Grid */}
-          {!loading && !error && conferencePresentations.length > 0 && (
+          {!isLoading && !isError && conferencePresentations.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
               {conferencePresentations.map((item) => (
                 <motion.div

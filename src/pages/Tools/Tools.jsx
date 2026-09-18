@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../hook/useAxiosSecure";
 import { Sparkles, Loader2, AlertCircle, Terminal, Search } from "lucide-react";
-import bgBanner from "../../assets/HomeBG.png"; // Adjust image path as needed
+import bgBanner from "../../assets/ToolsBanner.png"; 
 
 // Categories mapping
 const categories = [
@@ -14,31 +15,25 @@ const categories = [
 ];
 
 const Tools = () => {
-  const [toolsList, setToolsList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const axiosSecure = useAxiosSecure();
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch tools data from Backend API
-  useEffect(() => {
-    const fetchTools = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/tools");
-        const data = Array.isArray(response.data)
-          ? response.data
-          : response.data.data || [];
-        setToolsList(data);
-      } catch (err) {
-        console.error("Failed to fetch tools:", err);
-        setError("Failed to load tools data. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTools();
-  }, []);
+  // Fetch tools data from Backend API using TanStack Query
+  const {
+    data: toolsList = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["tools"],
+    queryFn: async () => {
+      const response = await axiosSecure.get("/tools");
+      return Array.isArray(response.data)
+        ? response.data
+        : response.data.data || [];
+    },
+  });
 
   // Filter tools based on Category & Search query
   const filteredTools = toolsList.filter((tool) => {
@@ -55,7 +50,7 @@ const Tools = () => {
           1. HERO BANNER
       ========================================== */}
       <section
-        className="relative min-h-[360px] md:min-h-[420px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-t-xl lg:rounded-t-3xl overflow-hidden shadow-md"
+        className="relative min-h-[360px] md:min-h-[580px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-t-xl lg:rounded-t-3xl overflow-hidden shadow-md"
         style={{
           backgroundImage: `url(${bgBanner})`,
         }}
@@ -145,7 +140,7 @@ const Tools = () => {
         </div>
 
         {/* Loading State */}
-        {loading && (
+        {isLoading && (
           <div className="flex flex-col items-center justify-center gap-3 py-16 font-sans">
             <Loader2 className="w-10 h-10 animate-spin text-amber-500" />
             <p className="text-sm text-slate-600 font-medium animate-pulse">
@@ -155,16 +150,18 @@ const Tools = () => {
         )}
 
         {/* Error State */}
-        {error && !loading && (
+        {isError && (
           <div className="bg-red-50/80 backdrop-blur-md p-6 rounded-2xl border border-red-200 max-w-md text-center space-y-2 font-sans my-8 shadow-sm">
             <AlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
             <h3 className="text-base font-bold text-slate-800">Fetch Failed</h3>
-            <p className="text-xs text-slate-600">{error}</p>
+            <p className="text-xs text-slate-600">
+              {error?.message || "Failed to load tools data. Please try again later."}
+            </p>
           </div>
         )}
 
         {/* Empty State */}
-        {!loading && !error && filteredTools.length === 0 && (
+        {!isLoading && !isError && filteredTools.length === 0 && (
           <div className="text-center py-16 bg-white/60 backdrop-blur-md rounded-3xl border border-dashed border-slate-300 w-full max-w-md my-8 space-y-2 font-sans shadow-inner">
             <Terminal className="w-10 h-10 text-slate-400 mx-auto" />
             <h3 className="text-base font-bold text-slate-700">
@@ -177,7 +174,7 @@ const Tools = () => {
         )}
 
         {/* Glassmorphic Tech Cards Grid */}
-        {!loading && !error && filteredTools.length > 0 && (
+        {!isLoading && !isError && filteredTools.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 sm:gap-8 w-full place-items-center mb-20">
             {filteredTools.map((tool) => (
               <div

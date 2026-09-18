@@ -7,9 +7,9 @@ const Navbar = () => {
 
   const navItems = [
     { id: "home", label: "Home", path: "/" },
-    { id: "awards", label: "Experience", path: "/awards-experience" },
-    { id: "tools", label: "Tools", path: "/research-tools" },
     { id: "research", label: "Research", path: "/research-interest" },
+    { id: "awards", label: "Experience", path: "/awards-experience" },
+    { id: "tools", label: "Tools/Software", path: "/research-tools" },
     { id: "courses", label: "Courses", path: "/completed-courses" },
     { id: "academics", label: "Academics", path: "/academic-degree" },
     { id: "workshops", label: "Workshops", path: "/workshops-seminars" },

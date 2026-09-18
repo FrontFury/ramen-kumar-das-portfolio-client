@@ -1,46 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../hook/useAxiosSecure";
 import { 
   GraduationCap, Calendar, Sparkles, Building2, 
   Award, Loader2, AlertCircle, ExternalLink, X, BookOpen 
 } from "lucide-react";
 
 // Banner Background Image
-import bgBanner from "../../assets/HomeBG.png"; 
+import bgBanner from "../../assets/AcademicBanner.jpg"; 
 
 const Academics = () => {
-  const [academicDegrees, setAcademicDegrees] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const axiosSecure = useAxiosSecure();
   const [selectedCert, setSelectedCert] = useState(null);
 
-  // Fetch API Data for Academics
-  useEffect(() => {
-    const fetchAcademics = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/academics");
-        const data = Array.isArray(response.data)
-          ? response.data
-          : response.data.data || [];
-        setAcademicDegrees(data);
-      } catch (err) {
-        console.error("Failed to fetch academic data:", err);
-        setError("Failed to load academic qualifications.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAcademics();
-  }, []);
+  // Fetch API Data using TanStack Query & useAxiosSecure
+  const { 
+    data: academicDegrees = [], 
+    isLoading, 
+    isError, 
+    error 
+  } = useQuery({
+    queryKey: ["academics"],
+    queryFn: async () => {
+      const response = await axiosSecure.get("/academics");
+      return Array.isArray(response.data)
+        ? response.data
+        : response.data.data || [];
+    },
+  });
 
   return (
-    <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-xl lg:rounded-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
+    <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-t-xl lg:rounded-t-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
       
       {/* 1. HERO BANNER */}
       <section
-        className="relative min-h-[360px] md:min-h-[420px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-xl lg:rounded-3xl overflow-hidden shadow-md"
+        className="relative min-h-[360px] md:min-h-[580px] flex flex-col justify-center items-center text-center px-4 py-16 bg-cover bg-center bg-no-repeat rounded-t-xl lg:rounded-t-3xl overflow-hidden shadow-md"
         style={{
           backgroundImage: `url(${bgBanner})`,
         }}
@@ -82,7 +77,7 @@ const Academics = () => {
         </div>
 
         {/* Loading State */}
-        {loading && (
+        {isLoading && (
           <div className="flex flex-col items-center justify-center gap-3 py-16 font-sans">
             <Loader2 className="w-9 h-9 animate-spin text-emerald-700" />
             <p className="text-sm text-gray-600 font-medium animate-pulse">
@@ -92,15 +87,17 @@ const Academics = () => {
         )}
 
         {/* Error State */}
-        {error && !loading && (
+        {isError && (
           <div className="bg-rose-50 p-6 rounded-2xl border border-rose-200 text-center space-y-2 font-sans">
             <AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
-            <p className="text-xs sm:text-sm text-rose-700 font-medium">{error}</p>
+            <p className="text-xs sm:text-sm text-rose-700 font-medium">
+              {error?.message || "Failed to load academic qualifications."}
+            </p>
           </div>
         )}
 
         {/* Empty State */}
-        {!loading && !error && academicDegrees.length === 0 && (
+        {!isLoading && !isError && academicDegrees.length === 0 && (
           <div className="bg-white/80 rounded-2xl p-8 text-center border border-dashed border-gray-300 font-sans">
             <GraduationCap className="w-8 h-8 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-500">No academic qualifications found.</p>
@@ -108,7 +105,7 @@ const Academics = () => {
         )}
 
         {/* DEGREE TIMELINE / CARDS */}
-        {!loading && !error && academicDegrees.length > 0 && (
+        {!isLoading && !isError && academicDegrees.length > 0 && (
           <div className="space-y-8 font-sans">
             {academicDegrees.map((item) => {
               const isOngoing = item.degree?.toLowerCase().includes("ongoing");
