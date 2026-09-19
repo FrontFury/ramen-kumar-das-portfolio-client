@@ -11,11 +11,12 @@ import {
   Compass,
   Mail,
 } from "lucide-react";
-import homeBgImage from "../../../assets/HomeBG.png";
+import homeBgImage from "../../../assets/HomeBG.jpg";
 import { FaGithub, FaOrcid } from "react-icons/fa6";
 import { FaFacebookF, FaLinkedin, FaYoutube, FaMicrosoft } from "react-icons/fa";
 import profileImg from "../../../assets/Profile01.png";
 import MemberShip from "../MemberShip/MemberShip";
+import PersonalInfo from "../PersonalInfo/PersonalInfo";
 
 const Home = () => {
   return (
@@ -222,12 +223,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* ==========================================
-          MEMBERSHIP SECTION (ADDED HERE)
-      ========================================== */}
-      <MemberShip />
-
       {/* ==========================================
           ABOUT SECTION
       ========================================== */}
@@ -322,6 +317,8 @@ const Home = () => {
           </div>
         </div>
       </section>
+            <MemberShip />
+            <PersonalInfo/>
     </div>
   );
 };
