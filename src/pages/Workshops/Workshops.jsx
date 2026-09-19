@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../hook/useAxiosSecure";
@@ -25,7 +25,7 @@ const Workshops = () => {
 
   // Fetch API Data using TanStack Query
   const {
-    data: workshops = [],
+    data: workshopsData = [],
     isLoading,
     isError,
     error,
@@ -39,9 +39,28 @@ const Workshops = () => {
     },
   });
 
+  // Helper function to handle dates with ordinal suffixes (e.g., "15th August, 2026")
+  const parseCustomDate = (dateString) => {
+    if (!dateString) return 0;
+    // Remove "st", "nd", "rd", "th" from the date string
+    const cleanedDateStr = dateString.replace(/(\d+)(st|nd|rd|th)/i, "$1");
+    const parsedDate = new Date(cleanedDateStr).getTime();
+    return isNaN(parsedDate) ? 0 : parsedDate;
+  };
+
+  // Sort workshops by date (Newest first / Latest to Oldest)
+  const workshops = useMemo(() => {
+    return [...workshopsData].sort((a, b) => {
+      const dateA = parseCustomDate(a.date);
+      const dateB = parseCustomDate(b.date);
+
+      return dateB - dateA; // Descending order
+    });
+  }, [workshopsData]);
+
   if (isLoading) {
     return (
-      <div className="w-full py-20 bg-[#F4F9F5]/60 flex flex-col  items-center justify-center gap-3 font-sans">
+      <div className="w-full py-20 bg-[#F4F9F5]/60 flex flex-col items-center justify-center gap-3 font-sans">
         <Loader2 className="w-10 h-10 animate-spin text-[#163A2D]" />
         <p className="text-sm font-semibold text-[#163A2D] animate-pulse">
           Loading Workshops & Seminars...
@@ -115,7 +134,7 @@ const Workshops = () => {
           </div>
         )}
 
-        {/* WORKSHOPS GRID */}
+        {/* WORKSHOPS GRID (Sorted by Date) */}
         {workshops.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-sans">
             {workshops.map((item, idx) => {

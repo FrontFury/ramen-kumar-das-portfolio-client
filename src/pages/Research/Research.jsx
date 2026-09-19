@@ -43,13 +43,20 @@ const Research = () => {
     },
   ];
 
-  // Papers Under Review Data
+  // Papers Under Review Data (Image er info add kora hoyeche)
   const papersUnderReview = [
     {
       id: 1,
       title: "A Revision and Presentation of ALEX Net and VGG Net Literature",
       authors: "Ramen Kumar Das, Shahriar Jahan Rafi",
       journal: "Daffodil International University Journal of Science and Technology",
+      status: "Under Review",
+    },
+    {
+      id: 2,
+      title: "DATA ANALYSIS AND DEATH RATE PREDICTION DURING COVID-19 IN BANGLADESH USING ML",
+      authors: "Ramen Kumar Das, Samiha Islam Borsha",
+      journal: "UITS Journal of Science & Engineering (UITSJSE)",
       status: "Under Review",
     },
   ];
@@ -66,7 +73,7 @@ const Research = () => {
   return (
     <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-t-xl lg:rounded-t-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
       
-      {/* 1. HERO BANNER (Height increased here) */}
+      {/* 1. HERO BANNER */}
       <section
         className="relative min-h-[480px] md:min-h-[580px] flex flex-col justify-center items-center text-center px-4 py-20 bg-cover bg-center bg-no-repeat rounded-t-xl lg:rounded-t-3xl overflow-hidden shadow-md"
         style={{
@@ -264,11 +271,9 @@ const Research = () => {
                   transition={{ duration: 0.3 }}
                   className="group bg-white/90 backdrop-blur-md rounded-2xl border border-emerald-100/80 p-6 shadow-sm hover:shadow-xl hover:border-emerald-300/80 transition-all flex flex-col justify-between relative overflow-hidden"
                 >
-                  {/* Glowing subtle hover accent */}
                   <div className="absolute -right-12 -top-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-amber-500/15 transition-all duration-500 pointer-events-none" />
 
                   <div>
-                    {/* Certificate Preview Thumbnail */}
                     {item.certificateUrl && (
                       <div
                         onClick={() => setSelectedCert(item.certificateUrl)}
@@ -286,23 +291,19 @@ const Research = () => {
                       </div>
                     )}
 
-                    {/* Paper Title */}
                     <h4 className="text-base font-bold text-[#163A2D] font-['Playfair_Display',serif] mb-2 leading-snug group-hover:text-emerald-800 transition-colors">
                       "{item.title}"
                     </h4>
 
-                    {/* Authors */}
                     <p className="text-xs text-amber-800 font-semibold mb-2">
                       Authors: <span className="text-gray-600 font-normal">{item.authors}</span>
                     </p>
 
-                    {/* Conference/Event Name */}
                     <p className="text-xs text-gray-700 font-medium leading-relaxed mb-4">
                       {item.conference}
                     </p>
                   </div>
 
-                  {/* Card Footer Details */}
                   <div className="pt-3 border-t border-emerald-100/60 flex flex-wrap items-center justify-between text-xs text-gray-500 gap-2">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5 text-emerald-600" />

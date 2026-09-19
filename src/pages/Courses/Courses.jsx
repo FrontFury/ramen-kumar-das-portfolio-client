@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../hook/useAxiosSecure";
@@ -29,6 +29,25 @@ const Courses = () => {
         : response.data.data || [];
     },
   });
+
+  // Helper function to handle dates with ordinal suffixes (e.g., "15th August, 2026")
+  const parseCustomDate = (dateString) => {
+    if (!dateString) return 0;
+    // Remove "st", "nd", "rd", "th" from the date string
+    const cleanedDateStr = dateString.replace(/(\d+)(st|nd|rd|th)/i, "$1");
+    const parsedDate = new Date(cleanedDateStr).getTime();
+    return isNaN(parsedDate) ? 0 : parsedDate;
+  };
+
+  // Sort courses by issueDate (Newest first / Latest to Oldest)
+  const sortedCourses = useMemo(() => {
+    return [...coursesData].sort((a, b) => {
+      const dateA = parseCustomDate(a.issueDate);
+      const dateB = parseCustomDate(b.issueDate);
+
+      return dateB - dateA; // Descending order
+    });
+  }, [coursesData]);
 
   return (
     <div className="w-full bg-[#F8FAFC] text-gray-800 rounded-t-xl lg:rounded-t-3xl overflow-hidden font-['Playfair_Display',serif] shadow-sm border border-emerald-100/60">
@@ -97,17 +116,17 @@ const Courses = () => {
         )}
 
         {/* Empty State */}
-        {!isLoading && !isError && coursesData.length === 0 && (
+        {!isLoading && !isError && sortedCourses.length === 0 && (
           <div className="bg-white/80 rounded-2xl p-8 text-center border border-dashed border-gray-300 font-sans">
             <GraduationCap className="w-8 h-8 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-500">No courses available at the moment.</p>
           </div>
         )}
 
-        {/* COURSE CARDS GRID */}
-        {!isLoading && !isError && coursesData.length > 0 && (
+        {/* COURSE CARDS GRID (Sorted by issueDate) */}
+        {!isLoading && !isError && sortedCourses.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
-            {coursesData.map((course) => (
+            {sortedCourses.map((course) => (
               <motion.div
                 key={course._id || course.title}
                 whileHover={{ y: -5 }}

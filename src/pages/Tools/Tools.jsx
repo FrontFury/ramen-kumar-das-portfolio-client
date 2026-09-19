@@ -4,14 +4,15 @@ import useAxiosSecure from "../../hook/useAxiosSecure";
 import { Sparkles, Loader2, AlertCircle, Terminal, Search } from "lucide-react";
 import bgBanner from "../../assets/ToolsBanner.png"; 
 
-// Categories mapping
+// Categories mapping matched strictly to image sequence
 const categories = [
   { id: "all", label: "All Arsenal" },
+  { id: "research", label: "Research & Tools" },
   { id: "ml-ai", label: "ML & AI / Vision" },
   { id: "nlp-sec", label: "NLP & Security" },
   { id: "prog-web", label: "Languages & Web" },
-  { id: "research", label: "Research & Tools" },
   { id: "db-office", label: "DB & Office" },
+  { id: "code-editor", label: "Code Editor" },
 ];
 
 const Tools = () => {
@@ -21,7 +22,7 @@ const Tools = () => {
 
   // Fetch tools data from Backend API using TanStack Query
   const {
-    data: toolsList = [],
+    data: rawToolsList = [],
     isLoading,
     isError,
     error,
@@ -34,6 +35,9 @@ const Tools = () => {
         : response.data.data || [];
     },
   });
+
+  // Reversing the fetched tools list so newest/last API items show first
+  const toolsList = [...rawToolsList].reverse();
 
   // Filter tools based on Category & Search query
   const filteredTools = toolsList.filter((tool) => {
@@ -97,7 +101,7 @@ const Tools = () => {
         </div>
 
         {/* Search & Filtering Controls */}
-        <div className="w-full max-w-3xl flex flex-col items-center gap-6 mb-14 font-sans">
+        <div className="w-full max-w-4xl flex flex-col items-center gap-6 mb-14 font-sans">
           {/* Glassmorphic Search Bar */}
           <div className="relative w-full max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
